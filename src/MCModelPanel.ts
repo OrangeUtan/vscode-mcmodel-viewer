@@ -3,16 +3,14 @@ import * as vscode from 'vscode';
 export class MCModelPanel {
 
     public static currentPanel?: MCModelPanel;
-    public static readonly viewType = "mcmodel-viewer";
+    public static readonly viewType = "mcmodel.preview";
 
     private readonly _panel: vscode.WebviewPanel;
 	private readonly _extensionUri: vscode.Uri;
 	private _disposables: vscode.Disposable[] = [];
 
     public static createOrShow(extensionUri: vscode.Uri) {
-		const column = vscode.window.activeTextEditor
-			? vscode.window.activeTextEditor.viewColumn
-			: undefined;
+		const column = vscode.ViewColumn.Beside;
 
 		// If we already have a panel, show it.
 		if (MCModelPanel.currentPanel) {
@@ -25,7 +23,7 @@ export class MCModelPanel {
 		const panel = vscode.window.createWebviewPanel(
 			MCModelPanel.viewType,
 			'MCModel Viewer',
-			column || vscode.ViewColumn.One,
+			column,
 			{
                 enableScripts: true, // Enable Javascript in webview
                 localResourceRoots: [
