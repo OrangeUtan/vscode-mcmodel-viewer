@@ -10,14 +10,15 @@
 		"Other"
 	],
 	"activationEvents": [
-        "onCommand:mcmodel-viewer.helloWorld"
+        "onCommand:mcmodel-viewer.test"
 	],
 	"main": "./dist/extension.js",
 	"contributes": {
 		"commands": [
 			{
-				"command": "mcmodel-viewer.helloWorld",
-				"title": "Hello World"
+				"command": "mcmodel-viewer.test",
+				"category": "MCModel-Viewer",
+				"title": "Test"
 			}
 		]
 	},
