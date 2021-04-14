@@ -10,7 +10,8 @@
 		"Other"
 	],
 	"activationEvents": [
-		"onCommand:mcmodel-viewer.test"
+		"onCommand:mcmodel-viewer.test",
+		"onCommand:mcmodel-viewer.refresh"
 	],
 	"main": "./dist/extension.js",
 	"contributes": {
@@ -19,6 +20,11 @@
 				"command": "mcmodel-viewer.test",
 				"category": "MCModel-Viewer",
 				"title": "Test"
+			},
+			{
+				"command": "mcmodel-viewer.refresh",
+				"category": "MCModel-Viewer",
+				"title": "Refresh"
 			}
 		]
 	},
