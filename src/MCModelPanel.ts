@@ -3,7 +3,7 @@ import * as vscode from 'vscode';
 export class MCModelPanel {
 
     public static currentPanel?: MCModelPanel;
-    public static readonly viewType = "mcmodel.preview";
+    public static readonly viewType = "mcmodel-viewer.preview";
 
     private readonly _panel: vscode.WebviewPanel;
 	private readonly _extensionUri: vscode.Uri;

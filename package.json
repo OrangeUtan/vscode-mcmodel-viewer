@@ -10,23 +10,33 @@
 		"Other"
 	],
 	"activationEvents": [
-		"onCommand:mcmodel-viewer.test",
+		"onCommand:mcmodel-viewer.showPreview",
 		"onCommand:mcmodel-viewer.refresh"
 	],
 	"main": "./dist/extension.js",
 	"contributes": {
 		"commands": [
 			{
-				"command": "mcmodel-viewer.test",
+				"command": "mcmodel-viewer.showPreview",
 				"category": "MCModel-Viewer",
-				"title": "Test"
+				"title": "Show Model Preview",
+				"icon": "$(open-preview)"
 			},
 			{
 				"command": "mcmodel-viewer.refresh",
 				"category": "MCModel-Viewer",
 				"title": "Refresh"
 			}
-		]
+		],
+		"menus": {
+			"editor/title":  [
+				{
+					"when": "resourceLangId == json",
+					"command": "mcmodel-viewer.showPreview",
+					"group": "navigation"
+				}
+			]
+		}
 	},
 	"scripts": {
 		"vscode:prepublish": "yarn run package",
@@ -63,5 +73,9 @@
 		"vscode-test": "^1.5.0",
 		"webpack": "^5.33.2",
 		"webpack-cli": "^4.6.0"
+	},
+	"dependencies": {
+		"three": "0.125.0",
+		"three-mcmodel": "^0.2.1"
 	}
 }
