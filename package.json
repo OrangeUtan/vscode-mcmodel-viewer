@@ -1,6 +1,6 @@
 {
 	"name": "mcmodel-viewer",
-	"displayName": "mcmodel-viewer",
+	"displayName": "Minecraft Model Viewer",
 	"description": "A viewer for Java Minecraft models",
 	"version": "0.0.1",
 	"engines": {
@@ -36,6 +36,16 @@
 					"group": "navigation"
 				}
 			]
+		},
+		"configuration": {
+			"title": "Minecraft Model Viewer",
+			"properties": {
+				"mcmodel-viewer.assetRoots": {
+					"description": "A list of directories that contain minecraft assets",
+					"type": "array",
+					"default": []
+				}
+			}
 		}
 	},
 	"scripts": {

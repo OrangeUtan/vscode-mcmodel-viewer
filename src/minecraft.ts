@@ -8,22 +8,28 @@ export async function getAssetRoots() {
     return files.map(f => vscode.Uri.file(path.dirname(f.path)));
 }
 
-export async function getTextureAssetRoots() {
-    const assetRoots = await getAssetRoots();
-    return assetRoots
+export async function getTextureAssetsRoots(assetsRoots?: vscode.Uri[]) {
+    if(!assetsRoots) {
+        assetsRoots = await getAssetRoots();
+    }
+
+    return assetsRoots
         .map(root => vscode.Uri.joinPath(root, "minecraft", "textures"))
         .filter(root => fs.existsSync(root.fsPath));
 }
 
-export async function resolveModelTextures(model: MinecraftModel) {
-    const textureAssetRoots = await getTextureAssetRoots();
+export async function resolveModelTextures(model: MinecraftModel, assetRoots?: vscode.Uri[]) {
+    if(!assetRoots) {
+        assetRoots = await getTextureAssetsRoots();
+    }
 
     let textures: {[key: string]: vscode.Uri} = {};
     for(let texture of Object.values(model.textures)) {
-        for(let root of textureAssetRoots) {
+        for(let root of assetRoots) {
             const textureUri = vscode.Uri.joinPath(root, texture + ".png");
             if(fs.existsSync(textureUri.fsPath)) {
                 textures[texture] = textureUri;
+                break;
             }
         }
     }

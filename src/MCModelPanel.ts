@@ -1,4 +1,5 @@
 import * as vscode from 'vscode';
+import * as config from './config';
 
 export class MCModelPanel {
 
@@ -23,13 +24,21 @@ export class MCModelPanel {
 			return;
 		}
 
+		let localResourceRoots = [
+			vscode.Uri.joinPath(extensionUri, "media"),
+			vscode.Uri.joinPath(extensionUri, "out/compiled")
+		];
+		vscode.workspace.workspaceFolders?.forEach(f => localResourceRoots.push(f.uri));
+		config.getAssetRoots().forEach(f => localResourceRoots.push(f));
+
 		// Otherwise, create a new panel.
 		const panel = vscode.window.createWebviewPanel(
 			MCModelPanel.viewType,
 			'MCModel Viewer',
 			column,
 			{
-                enableScripts: true // Enable Javascript in webview
+                enableScripts: true, // Enable Javascript in webview,
+				localResourceRoots
             }
 		);
 
