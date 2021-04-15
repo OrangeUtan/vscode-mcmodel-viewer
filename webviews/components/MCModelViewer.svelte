@@ -1,6 +1,7 @@
 <script lang="ts">
-    import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
+    import OrbitControls from 'three-orbitcontrols';
     import * as THREE from 'three';
+    import {MinecraftModelLoader, MinecraftTextureLoader} from 'three-mcmodel';
 
     let scene: THREE.Scene;
     let camera: THREE.PerspectiveCamera;
@@ -43,5 +44,20 @@
     }
 
     init()
+
+    window.addEventListener('message', e => {
+        switch(e.data.command) {
+            case "loadModel":
+                loadModel(e.data.value.model, e.data.value.textures);
+        }
+    });
+
+    function loadModel (model: string, textures: string[]) {
+        new MinecraftModelLoader().load(model, mesh => {
+            const textureLoader = new MinecraftTextureLoader()
+            mesh.resolveTextures(p => textureLoader.load(textures[p]))
+            scene.add(mesh)
+        })
+    }
 </script>
 

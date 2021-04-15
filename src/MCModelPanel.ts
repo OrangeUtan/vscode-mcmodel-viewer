@@ -5,7 +5,7 @@ export class MCModelPanel {
     public static currentPanel?: MCModelPanel;
     public static readonly viewType = "mcmodel-viewer.preview";
 
-    private readonly _panel: vscode.WebviewPanel;
+    readonly _panel: vscode.WebviewPanel;
 	private readonly _extensionUri: vscode.Uri;
 	private _disposables: vscode.Disposable[] = [];
 
@@ -25,11 +25,7 @@ export class MCModelPanel {
 			'MCModel Viewer',
 			column,
 			{
-                enableScripts: true, // Enable Javascript in webview
-                localResourceRoots: [
-                    vscode.Uri.joinPath(extensionUri, "media"),
-                    vscode.Uri.joinPath(extensionUri, "out/compiled")
-                ]
+                enableScripts: true // Enable Javascript in webview
             }
 		);
 
@@ -127,7 +123,7 @@ export class MCModelPanel {
 			<html lang="en">
 			<head>
 				<meta charset="UTF-8">
-				<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src ${webview.cspSource}; img-src ${webview.cspSource} https:; script-src 'nonce-${nonce}';">
+				<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src ${webview.cspSource}; img-src ${webview.cspSource} https: data:; script-src 'nonce-${nonce}'; connect-src data: vscode-webview-resource:">
 				<meta name="viewport" content="width=device-width, initial-scale=1.0">
 				<link href="${stylesResetUri}" rel="stylesheet">
 				<link href="${stylesMainUri}" rel="stylesheet">
