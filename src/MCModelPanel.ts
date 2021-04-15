@@ -5,9 +5,13 @@ export class MCModelPanel {
     public static currentPanel?: MCModelPanel;
     public static readonly viewType = "mcmodel-viewer.preview";
 
-    readonly _panel: vscode.WebviewPanel;
+    private readonly _panel: vscode.WebviewPanel;
 	private readonly _extensionUri: vscode.Uri;
 	private _disposables: vscode.Disposable[] = [];
+
+	static get webview() {
+		return this.currentPanel?._panel.webview;
+	}
 
     public static createOrShow(extensionUri: vscode.Uri) {
 		const column = vscode.ViewColumn.Beside;
@@ -39,6 +43,10 @@ export class MCModelPanel {
 
     public static revive(panel: vscode.WebviewPanel, extensionUri: vscode.Uri) {
 		MCModelPanel.currentPanel = new MCModelPanel(panel, extensionUri);
+	}
+
+	public static postMessage(message: any) {
+		this.currentPanel?._panel.webview.postMessage(message);
 	}
 
     private constructor(panel: vscode.WebviewPanel, extensionUri: vscode.Uri) {

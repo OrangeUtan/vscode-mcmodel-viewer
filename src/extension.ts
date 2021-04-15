@@ -1,27 +1,36 @@
 import * as vscode from 'vscode';
 import { MCModelPanel } from './MCModelPanel';
+import * as minecraft from './minecraft';
+import * as fs from 'fs';
+import * as path from 'path';
+import {isMinecraftModel, MinecraftModel} from './minecraftModel';
 
 export function activate(context: vscode.ExtensionContext) {
-	context.subscriptions.push(vscode.commands.registerCommand('mcmodel-viewer.showPreview', () => {
+	context.subscriptions.push(vscode.commands.registerCommand('mcmodel-viewer.showPreview', async () => {
+		if(!vscode.window.activeTextEditor) {return;}
+		const modelUri = vscode.window.activeTextEditor.document.uri;
+
+		const model: MinecraftModel = JSON.parse(fs.readFileSync(modelUri.fsPath).toString());
+		if(!isMinecraftModel(model)) {
+			return;
+		}
+
 		MCModelPanel.createOrShow(context.extensionUri);
 
-		if(vscode.window.activeTextEditor) {
-			const val = {
-				model: MCModelPanel.currentPanel?._panel.webview.asWebviewUri(vscode.window.activeTextEditor.document.uri).toString(),
-				textures: {
-					'block/cake_bottom': MCModelPanel.currentPanel?._panel.webview.asWebviewUri(vscode.Uri.parse("d%3A/repos/Oran9eUtan/vscode-mcmodel-viewer/test/assets/cake_bottom.png")).toString(),
-					'block/cake_side': MCModelPanel.currentPanel?._panel.webview.asWebviewUri(vscode.Uri.parse("d%3A/repos/Oran9eUtan/vscode-mcmodel-viewer/test/assets/cake_side.png")).toString(),
-					'block/cake_top': MCModelPanel.currentPanel?._panel.webview.asWebviewUri(vscode.Uri.parse("d%3A/repos/Oran9eUtan/vscode-mcmodel-viewer/test/assets/cake_top.png")).toString()
-				}
-			};
-
-			console.log("sending message: ");
-			console.dir(val);
-
-			setTimeout(() => {
-				MCModelPanel.currentPanel?._panel.webview.postMessage({command: "loadModel", value: val});
-			}, 50);
+		const modelTextures = await minecraft.resolveModelTextures(model);
+		let webviewModelTextures = {};
+		for(let key of Object.keys(modelTextures)) {
+			webviewModelTextures[key] = MCModelPanel.webview?.asWebviewUri(modelTextures[key]).toString();
 		}
+
+		const val = {
+			model: MCModelPanel.webview?.asWebviewUri(modelUri).toString(),
+			textures: webviewModelTextures
+		};
+
+		setTimeout(() => {
+			MCModelPanel.postMessage({command: "loadModel", value: val});
+		}, 50);
 	}));
 
 	context.subscriptions.push(vscode.commands.registerCommand('mcmodel-viewer.refresh', () => {
