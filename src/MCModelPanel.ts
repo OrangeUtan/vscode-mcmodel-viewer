@@ -70,8 +70,7 @@ export class MCModelPanel {
 		this._panel.onDidDispose(() => this.dispose(), null, this._disposables);
 
 		// Update the content based on view changes
-		this._panel.onDidChangeViewState(
-			e => {
+		this._panel.onDidChangeViewState(e => {
 				if (this._panel.visible) {
 					this._update();
 				}
@@ -92,10 +91,6 @@ export class MCModelPanel {
 			null,
 			this._disposables
 		);
-	}
-
-    public doRefactor() {
-		this._panel.webview.postMessage({ command: 'refactor' });
 	}
 
 	public dispose() {
