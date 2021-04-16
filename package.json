@@ -32,7 +32,7 @@
 		"menus": {
 			"editor/title": [
 				{
-					"when": "resourceLangId == json && mcmodel-viewer.showModelMenu",
+					"when": "resourceLangId == json && mcmodel-viewer.activeTextEditorIsModel",
 					"command": "mcmodel-viewer.showPreview",
 					"group": "navigation"
 				}

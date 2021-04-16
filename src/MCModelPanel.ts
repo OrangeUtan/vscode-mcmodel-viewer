@@ -1,5 +1,8 @@
 import * as vscode from 'vscode';
 import * as config from './config';
+import { MinecraftModel, isMinecraftModel } from './minecraftModel';
+import * as minecraft from './minecraft';
+import * as fs from 'fs';
 
 export class MCModelPanel {
 
@@ -9,6 +12,30 @@ export class MCModelPanel {
     private readonly _panel: vscode.WebviewPanel;
 	private readonly _extensionUri: vscode.Uri;
 	private _disposables: vscode.Disposable[] = [];
+
+	public static async loadModel(modelUri: vscode.Uri, textureAssetsRoots: vscode.Uri[]) {
+		const model: MinecraftModel = JSON.parse(fs.readFileSync(modelUri.fsPath).toString());
+		if(!isMinecraftModel(model)) {
+			return false;
+		}
+
+		const modelTextures = await minecraft.resolveModelTextures(model, textureAssetsRoots);
+		let webviewModelTextures: {[key: string]: string} = {};
+		for(let key of Object.keys(modelTextures)) {
+			const uri = this.webview?.asWebviewUri(modelTextures[key]).toString();
+			if(uri) {
+				webviewModelTextures[key] = uri;
+			}
+		}
+
+		const val = {
+			model: this.webview?.asWebviewUri(modelUri).toString(),
+			textures: webviewModelTextures
+		};
+
+		this.postMessage({command: "loadModel", value: val});
+		return true;
+	};
 
 	static get webview() {
 		return this.currentPanel?._panel.webview;
@@ -69,16 +96,6 @@ export class MCModelPanel {
 		// This happens when the user closes the panel or when the panel is closed programmatically
 		this._panel.onDidDispose(() => this.dispose(), null, this._disposables);
 
-		// Update the content based on view changes
-		this._panel.onDidChangeViewState(e => {
-				if (this._panel.visible) {
-					this._update();
-				}
-			},
-			null,
-			this._disposables
-		);
-
 		// Handle messages from the webview
 		this._panel.webview.onDidReceiveMessage(
 			message => {
@@ -117,7 +134,6 @@ export class MCModelPanel {
             }
         });
 	}
-
 
     private _getHtmlForWebview(webview: vscode.Webview) {
 		const scriptUri = webview.asWebviewUri(

@@ -7,7 +7,7 @@ import {isMinecraftModel, MinecraftModel} from './minecraftModel';
 import * as config from './config';
 
 let textureAssetsRoots: Array<vscode.Uri> = [];
-let showModelMenuController;
+let textEditorController;
 
 export async function activate(context: vscode.ExtensionContext) {
 	textureAssetsRoots = textureAssetsRoots.concat(
@@ -15,37 +15,15 @@ export async function activate(context: vscode.ExtensionContext) {
 		await minecraft.getTextureAssetsRoots(config.getAssetRoots())
 	);
 
-	showModelMenuController = new ShowModelMenuController();
-	context.subscriptions.push(showModelMenuController);
+	textEditorController = new TextEditorController();
+	context.subscriptions.push(textEditorController);
 
 	context.subscriptions.push(vscode.commands.registerCommand('mcmodel-viewer.showPreview', async () => {
 		if(!vscode.window.activeTextEditor) {return;}
 		const modelUri = vscode.window.activeTextEditor.document.uri;
 
-		const model: MinecraftModel = JSON.parse(fs.readFileSync(modelUri.fsPath).toString());
-		if(!isMinecraftModel(model)) {
-			return;
-		}
-
 		MCModelPanel.createOrShow(context.extensionUri);
-
-		const modelTextures = await minecraft.resolveModelTextures(model, textureAssetsRoots);
-		let webviewModelTextures: {[key: string]: string} = {};
-		for(let key of Object.keys(modelTextures)) {
-			const uri = MCModelPanel.webview?.asWebviewUri(modelTextures[key]).toString();
-			if(uri) {
-				webviewModelTextures[key] = uri;
-			}
-		}
-
-		const val = {
-			model: MCModelPanel.webview?.asWebviewUri(modelUri).toString(),
-			textures: webviewModelTextures
-		};
-
-		setTimeout(() => {
-			MCModelPanel.postMessage({command: "loadModel", value: val});
-		}, 50);
+		MCModelPanel.loadModel(modelUri, textureAssetsRoots);
 	}));
 
 	context.subscriptions.push(vscode.commands.registerCommand('mcmodel-viewer.refresh', () => {
@@ -60,7 +38,7 @@ export async function activate(context: vscode.ExtensionContext) {
 
 export function deactivate() {}
 
-class ShowModelMenuController {
+class TextEditorController {
 	private _disposable: vscode.Disposable;
 
 	constructor() {
@@ -75,7 +53,7 @@ class ShowModelMenuController {
 
 	private _onChangedActiveTextEditor(editor?: vscode.TextEditor) {
 		const val = editor ? this._isModelFile(editor) : false;
-		vscode.commands.executeCommand("setContext", "mcmodel-viewer.showModelMenu", val);
+		vscode.commands.executeCommand("setContext", "mcmodel-viewer.activeTextEditorIsModel", val);
 	}
 
 	private _isModelFile(editor: vscode.TextEditor) {
