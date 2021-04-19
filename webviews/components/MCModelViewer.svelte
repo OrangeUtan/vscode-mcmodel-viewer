@@ -1,12 +1,14 @@
 <script lang="ts">
-    import OrbitControls from 'three-orbitcontrols';
     import * as THREE from 'three';
-    import {MinecraftModelLoader, MinecraftTextureLoader} from 'three-mcmodel';
+    import {OrbitControls} from 'three/examples/jsm/controls/OrbitControls'
+    import {MinecraftModelLoader, MinecraftModelMesh, MinecraftTextureLoader} from '@oran9e/three-mcmodel';
 
     let scene: THREE.Scene;
     let camera: THREE.PerspectiveCamera;
     let controls: OrbitControls;
     let renderer: THREE.WebGLRenderer;
+    let modelMesh: MinecraftModelMesh
+    const clock = new THREE.Clock()
 
     function init () {
         scene = new THREE.Scene()
@@ -38,6 +40,12 @@
     }
 
     function animate () {
+        const delta = clock.getDelta();
+
+        if(modelMesh) {
+            modelMesh.updateAnimation(1000 * delta)
+        }
+
         requestAnimationFrame(animate)
         controls.update()
         renderer.render(scene, camera)
@@ -56,7 +64,9 @@
         new MinecraftModelLoader().load(model, mesh => {
             const textureLoader = new MinecraftTextureLoader()
             mesh.resolveTextures(p => textureLoader.load(textures[p]))
-            scene.add(mesh)
+
+            modelMesh = mesh
+            scene.add(modelMesh)
         })
     }
 </script>

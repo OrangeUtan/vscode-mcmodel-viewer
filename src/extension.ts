@@ -3,7 +3,6 @@ import { MCModelPanel } from './MCModelPanel';
 import * as minecraft from './minecraft';
 import * as fs from 'fs';
 import * as path from 'path';
-import {isMinecraftModel, MinecraftModel} from './minecraftModel';
 import * as config from './config';
 
 let textureAssetsRoots: Array<vscode.Uri> = [];
@@ -52,13 +51,5 @@ class TextEditorController {
 	}
 
 	private _onChangedActiveTextEditor(editor?: vscode.TextEditor) {
-		const val = editor ? this._isModelFile(editor) : false;
-		vscode.commands.executeCommand("setContext", "mcmodel-viewer.activeTextEditorIsModel", val);
-	}
-
-	private _isModelFile(editor: vscode.TextEditor) {
-		return editor
-			&& editor.document.languageId === "json"
-			&& isMinecraftModel(JSON.parse(editor.document.getText()));
 	}
 }

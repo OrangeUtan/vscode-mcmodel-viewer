@@ -65,6 +65,7 @@
 		"@types/glob": "^7.1.3",
 		"@types/mocha": "^8.0.4",
 		"@types/node": "^12.11.7",
+		"@types/three": "^0.127.1",
 		"@types/vscode": "^1.55.0",
 		"@typescript-eslint/eslint-plugin": "^4.14.1",
 		"@typescript-eslint/parser": "^4.14.1",
@@ -86,7 +87,6 @@
 		"webpack-cli": "^4.6.0"
 	},
 	"dependencies": {
-		"three-mcmodel": "^0.2.1",
-		"three-orbitcontrols": "2.96.3"
+		"@oran9e/three-mcmodel": "^0.0.1"
 	}
 }

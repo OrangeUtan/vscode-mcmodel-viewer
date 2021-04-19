@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
 import * as config from './config';
-import { MinecraftModel, isMinecraftModel } from './minecraftModel';
+import { MinecraftModel } from '@oran9e/three-mcmodel/dist/src/model';
 import * as minecraft from './minecraft';
 import * as fs from 'fs';
 
@@ -14,10 +14,7 @@ export class MCModelPanel {
 	private _disposables: vscode.Disposable[] = [];
 
 	public static async loadModel(modelUri: vscode.Uri, textureAssetsRoots: vscode.Uri[]) {
-		const model: MinecraftModel = JSON.parse(fs.readFileSync(modelUri.fsPath).toString());
-		if(!isMinecraftModel(model)) {
-			return false;
-		}
+		const model = MinecraftModel.fromJson(JSON.parse(fs.readFileSync(modelUri.fsPath).toString()));
 
 		const modelTextures = await minecraft.resolveModelTextures(model, textureAssetsRoots);
 		let webviewModelTextures: {[key: string]: string} = {};

@@ -71,6 +71,13 @@
     "@nodelib/fs.scandir" "2.1.4"
     fastq "^1.6.0"
 
+"@oran9e/three-mcmodel@^0.0.1":
+  version "0.0.1"
+  resolved "https://registry.yarnpkg.com/@oran9e/three-mcmodel/-/three-mcmodel-0.0.1.tgz#73097f802bfcf8e599472f66d839fdc041d74ddd"
+  integrity sha512-5Rvded8WmWj5PsT4g7qxZ8f5y3YMHCXvuFXtOX6bK7oVN9CPSl6DimkC1FfKJwETGpHZywtvJsZ3WjKgxKI7mA==
+  dependencies:
+    three "^0.127.0"
+
 "@rollup/plugin-commonjs@^18.0.0":
   version "18.0.0"
   resolved "https://registry.yarnpkg.com/@rollup/plugin-commonjs/-/plugin-commonjs-18.0.0.tgz#50dc7518b5aa9e66a270e529ea85115d269825c4"
@@ -218,6 +225,11 @@
   integrity sha512-2XZovu4NwcqmtZtsBR5XYLw18T8cBCnU2USFHTnYLLHz9fkhnoEMoDsqShJIOFsFhn5aJHjweiUUdTrDGujegA==
   dependencies:
     "@types/node" "*"
+
+"@types/three@^0.127.1":
+  version "0.127.1"
+  resolved "https://registry.yarnpkg.com/@types/three/-/three-0.127.1.tgz#0978054e5daa6485946a3f1518a76412186ae81f"
+  integrity sha512-e90iYq3zde3axANg7BPZY0fKrez1AzveamIIFk23PMh9WtCx91geokDy+yEAIymdIldgUpvezAP6+zCV3oekXw==
 
 "@types/vscode@^1.55.0":
   version "1.55.0"
@@ -2403,22 +2415,10 @@ text-table@^0.2.0:
   resolved "https://registry.yarnpkg.com/text-table/-/text-table-0.2.0.tgz#7f5ee823ae805207c00af2df4a84ec3fcfa570b4"
   integrity sha1-f17oI66AUgfACvLfSoTsP8+lcLQ=
 
-three-mcmodel@^0.2.1:
-  version "0.2.1"
-  resolved "https://registry.yarnpkg.com/three-mcmodel/-/three-mcmodel-0.2.1.tgz#6984cdca95062103e7927eb1cf36eec7b53506f0"
-  integrity sha512-pxhIEGGkmZeibvXhf9iJ8Cc7x62zlquWDtcspoFGN0sBBi8LjzmzN+e8j232XbaM0Ibo8c5JDnmutuu7WmvzLg==
-  dependencies:
-    three "^0.98.0"
-
-three-orbitcontrols@2.96.3:
-  version "2.96.3"
-  resolved "https://registry.yarnpkg.com/three-orbitcontrols/-/three-orbitcontrols-2.96.3.tgz#52f7e33462561aa9d751bbaf0f1b23b7f04aa834"
-  integrity sha512-Gq15c/VtGvi+1qsDyJ+ESBCCnyGELBV1jeiI5ozQ5RBc+fxNthgHFyfuo+VeBGRqon9AqA6Jy8egMtg5XF7EaQ==
-
-three@^0.98.0:
-  version "0.98.0"
-  resolved "https://registry.yarnpkg.com/three/-/three-0.98.0.tgz#11d4e3cca4b5d099c7de0ea5afa153b5d20cda84"
-  integrity sha512-fihjYVjCmQbI03zt1+YCl/m+UrZCcDHFNLexgqBOIdPwnO6PYkQaYUsIbqtvNNse+BiMeu+pQWzZn9/NSnIv6A==
+three@^0.127.0:
+  version "0.127.0"
+  resolved "https://registry.yarnpkg.com/three/-/three-0.127.0.tgz#c463f4d41b2c735dcf8e9e51a388815e80cd3791"
+  integrity sha512-wtgrn+mhYUbobxT7QN3GPdu3SRpSBQvwY6uOzLChWS7QE//f7paDU/+wlzbg+ngeIvBBqjBHSRuywTh8A99Jng==
 
 to-regex-range@^5.0.1:
   version "5.0.1"

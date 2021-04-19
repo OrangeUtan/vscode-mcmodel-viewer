@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
 import * as path from 'path';
 import * as fs from 'fs';
-import { MinecraftModel } from './minecraftModel';
+import { MinecraftModel } from '@oran9e/three-mcmodel';
 
 export async function getAssetRoots() {
     const files = await vscode.workspace.findFiles("**/.mcassetsroot");
@@ -24,7 +24,7 @@ export async function resolveModelTextures(model: MinecraftModel, assetRoots?: v
     }
 
     let textures: {[key: string]: vscode.Uri} = {};
-    for(let texture of Object.values(model.textures)) {
+    for(let texture of Object.values(model.textures!)) {
         for(let root of assetRoots) {
             const textureUri = vscode.Uri.joinPath(root, texture + ".png");
             if(fs.existsSync(textureUri.fsPath)) {
