@@ -12,14 +12,19 @@
     let modelMesh: MinecraftModelMesh
     const clock = new THREE.Clock()
 
-    const voxelGrid = new THREE.GridHelper(16*3, 16*3, 0x444444, 0x444444)
-    const blockGrid = new THREE.GridHelper(16*3, 3)
+    // Helpers
+    const voxelGrid = new THREE.GridHelper(48, 48, 0x444444, 0x444444)
+    const blockGrid = new THREE.GridHelper(48, 3)
     let cardinalDirectionLabels = []
+    const boundingBox = new THREE.LineSegments(
+        new THREE.EdgesGeometry(new THREE.BoxGeometry(48, 48, 48)).translate(0, 8, 0),
+        new THREE.LineBasicMaterial({ color: 0x444444, linewidth: 3 })
+    )
 
     function init () {
         scene = new THREE.Scene()
         camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.01, 1000)
-        camera.position.set(16, 16, 64)
+        camera.position.set(0, 48, 48)
 
         renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true })
         document.body.appendChild(renderer.domElement)
@@ -35,16 +40,10 @@
         controls.enableKeys = false
         controls.screenSpacePanning = true
 
-        const lineMaterial = new THREE.LineBasicMaterial({ color: 0x1111cc, linewidth: 3 });
-        const cube =  new THREE.LineSegments(
-            new THREE.EdgesGeometry(new THREE.BoxGeometry(16, 16, 16)),
-            lineMaterial
-        )
-        scene.add(cube)
-
+        // Add helpers
+        scene.add(boundingBox)
         scene.add(voxelGrid)
         scene.add(blockGrid)
-
         createCardinalDirectionLabels()
 
         animate()
