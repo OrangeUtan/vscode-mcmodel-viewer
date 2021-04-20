@@ -1,38 +1,34 @@
 import * as vscode from 'vscode';
 import { MCModelPanel } from './MCModelPanel';
-import * as minecraft from './minecraft';
-import * as fs from 'fs';
-import * as path from 'path';
 import * as config from './config';
 
-let textureAssetsRoots: Array<vscode.Uri> = [];
 let textEditorController;
 
 export async function activate(context: vscode.ExtensionContext) {
-	textureAssetsRoots = textureAssetsRoots.concat(
-		await minecraft.getTextureAssetsRoots(),
-		await minecraft.getTextureAssetsRoots(config.getAssetRoots())
-	);
-
 	textEditorController = new TextEditorController();
 	context.subscriptions.push(textEditorController);
 
-	context.subscriptions.push(vscode.commands.registerCommand('mcmodel-viewer.showPreview', async () => {
-		if(!vscode.window.activeTextEditor) {return;}
-		const modelUri = vscode.window.activeTextEditor.document.uri;
+	// Listen to configuration changes
+	context.subscriptions.push(...config.createConfigurationListeners());
 
-		MCModelPanel.createOrShow(context.extensionUri);
-		MCModelPanel.loadModel(modelUri, textureAssetsRoots);
-	}));
+	// Register commands
+	context.subscriptions.push(
+		vscode.commands.registerCommand('mcmodel-viewer.showPreview', async () => {
+			if(!vscode.window.activeTextEditor) {return;}
+			const modelUri = vscode.window.activeTextEditor.document.uri;
 
-	context.subscriptions.push(vscode.commands.registerCommand('mcmodel-viewer.refresh', () => {
-		MCModelPanel.kill();
-		MCModelPanel.createOrShow(context.extensionUri);
+			MCModelPanel.createOrShow(context.extensionUri);
+			MCModelPanel.loadModel(modelUri);
+		}),
+		vscode.commands.registerCommand('mcmodel-viewer.refresh', () => {
+			MCModelPanel.kill();
+			MCModelPanel.createOrShow(context.extensionUri);
 
-		setTimeout(() => {
-			vscode.commands.executeCommand("workbench.action.webview.openDeveloperTools");
-		}, 500);
-	}));
+			setTimeout(() => {
+				vscode.commands.executeCommand("workbench.action.webview.openDeveloperTools");
+			}, 500);
+		})
+	);
 }
 
 export function deactivate() {}

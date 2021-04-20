@@ -13,10 +13,10 @@ export class MCModelPanel {
 	private readonly _extensionUri: vscode.Uri;
 	private _disposables: vscode.Disposable[] = [];
 
-	public static async loadModel(modelUri: vscode.Uri, textureAssetsRoots: vscode.Uri[]) {
+	public static async loadModel(modelUri: vscode.Uri) {
 		const model = MinecraftModel.fromJson(JSON.parse(fs.readFileSync(modelUri.fsPath).toString()));
 
-		const modelTextures = await minecraft.resolveModelTextures(model, textureAssetsRoots);
+		const modelTextures = await minecraft.resolveModelTextures(model);
 		let webviewModelTextures: {[key: string]: string} = {};
 		for(let key of Object.keys(modelTextures)) {
 			const uri = this.webview?.asWebviewUri(modelTextures[key]).toString();
