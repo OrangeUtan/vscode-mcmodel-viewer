@@ -10,6 +10,9 @@
     let modelMesh: MinecraftModelMesh
     const clock = new THREE.Clock()
 
+    const voxelGrid = new THREE.GridHelper(16*3, 16*3, 0x444444, 0x444444)
+    const blockGrid = new THREE.GridHelper(16*3, 3)
+
     function init () {
         scene = new THREE.Scene()
         camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.01, 1000)
@@ -36,6 +39,8 @@
         )
         scene.add(cube)
 
+        scene.add(voxelGrid)
+        scene.add(blockGrid)
         animate()
     }
 

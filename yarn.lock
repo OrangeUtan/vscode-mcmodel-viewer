@@ -71,10 +71,10 @@
     "@nodelib/fs.scandir" "2.1.4"
     fastq "^1.6.0"
 
-"@oran9e/three-mcmodel@^0.0.1":
-  version "0.0.1"
-  resolved "https://registry.yarnpkg.com/@oran9e/three-mcmodel/-/three-mcmodel-0.0.1.tgz#73097f802bfcf8e599472f66d839fdc041d74ddd"
-  integrity sha512-5Rvded8WmWj5PsT4g7qxZ8f5y3YMHCXvuFXtOX6bK7oVN9CPSl6DimkC1FfKJwETGpHZywtvJsZ3WjKgxKI7mA==
+"@oran9e/three-mcmodel@^0.0.2":
+  version "0.0.2"
+  resolved "https://registry.yarnpkg.com/@oran9e/three-mcmodel/-/three-mcmodel-0.0.2.tgz#29dd2008047e02ec42083de29c051273f74fa6b2"
+  integrity sha512-xun592im2CMt/xHQ+qVrTbKjhcAxZZo9EW1kCsVowcZ2jUiEKB255khK5XTZj2rhhm4E285G7SK2lORZBX6DSw==
   dependencies:
     three "^0.127.0"
 
@@ -2349,10 +2349,10 @@ svelte-check@^1.4.0:
     svelte-preprocess "^4.0.0"
     typescript "*"
 
-svelte-preprocess@^4.0.0, svelte-preprocess@^4.7.0:
-  version "4.7.0"
-  resolved "https://registry.yarnpkg.com/svelte-preprocess/-/svelte-preprocess-4.7.0.tgz#10a0acf1a8b1afdd7e0aff3769f4175eb77776fe"
-  integrity sha512-iNrY4YGqi0LD2e6oT9YbdSzOKntxk8gmzfqso1z/lUJOZh4o6fyIqkirmiZ8/dDJFqtIE1spVgDFWgkfhLEYlw==
+svelte-preprocess@^4.0.0, svelte-preprocess@^4.7.2:
+  version "4.7.2"
+  resolved "https://registry.yarnpkg.com/svelte-preprocess/-/svelte-preprocess-4.7.2.tgz#e16bf5cc152df8097485ce8c7842073a83a12b1e"
+  integrity sha512-EToG+08rEsA33btv+C5g2qnRArwpTc5AoU0QBB3ZEkYagxAb2yPNsy0qsmtvbJOTBMy6o3oyijDdl3DMpMvpEg==
   dependencies:
     "@types/pug" "^2.0.4"
     "@types/sass" "^1.16.0"
