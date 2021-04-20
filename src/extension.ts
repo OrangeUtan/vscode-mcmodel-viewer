@@ -1,12 +1,13 @@
 import * as vscode from 'vscode';
 import { MCModelPanel } from './MCModelPanel';
 import * as config from './config';
+import * as utils from './utils';
 
-let textEditorController;
 
 export async function activate(context: vscode.ExtensionContext) {
-	textEditorController = new TextEditorController();
-	context.subscriptions.push(textEditorController);
+	context.subscriptions.push(
+		vscode.window.onDidChangeActiveTextEditor(onChangedActiveTextEditor)
+	);
 
 	// Listen to configuration changes
 	context.subscriptions.push(...config.createConfigurationListeners());
@@ -33,19 +34,13 @@ export async function activate(context: vscode.ExtensionContext) {
 
 export function deactivate() {}
 
-class TextEditorController {
-	private _disposable: vscode.Disposable;
+function onChangedActiveTextEditor(editor?: vscode.TextEditor) {
+	const val = editor ? isModelFile(editor) : false;
+	vscode.commands.executeCommand("setContext", "mcmodel-viewer.activeTextEditorIsModel", val);
+}
 
-	constructor() {
-		let subscriptions: vscode.Disposable[] = [];
-		vscode.window.onDidChangeActiveTextEditor(this._onChangedActiveTextEditor, this, subscriptions);
-		this._disposable = vscode.Disposable.from(...subscriptions);
-	}
-
-	dispose() {
-		this._disposable.dispose();
-	}
-
-	private _onChangedActiveTextEditor(editor?: vscode.TextEditor) {
-	}
+function isModelFile(editor: vscode.TextEditor) {
+	return editor
+		&& editor.document.languageId === "json"
+		 && config.modelAssetsRoots.some(root => utils.isParentDir(root.path, editor.document.uri.path));
 }
