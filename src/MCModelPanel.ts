@@ -44,7 +44,6 @@ export class MCModelPanel {
 		// If we already have a panel, show it.
 		if (MCModelPanel.currentPanel) {
 			MCModelPanel.currentPanel._panel.reveal(column);
-            MCModelPanel.currentPanel._update();
 			return;
 		}
 

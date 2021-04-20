@@ -10,7 +10,7 @@ export class Text2D extends Mesh {
         geometry.rotateX(rotation[0]);
         geometry.rotateY(rotation[1]);
         geometry.rotateZ(rotation[2]);
-        geometry.translate(...translation);
+        geometry.translate(translation[0], translation[1], translation[2]);
 
         super(geometry, new MeshBasicMaterial({color: textColor}));
     }

@@ -1,16 +1,20 @@
 <script lang="ts">
-    import * as THREE from 'three';
-    import {OrbitControls} from 'three/examples/jsm/controls/OrbitControls'
-    import {MinecraftModelLoader, MinecraftModelMesh, MinecraftTextureLoader} from '@oran9e/three-mcmodel';
-    import { FontLoader } from 'three';
-    import { Text2D } from './Text2D';
+	import * as THREE from 'three';
+    import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
+    import { MinecraftModelMesh, MinecraftTextureLoader } from '@oran9e/three-mcmodel';
+    import { Text2D } from '../utils/Text2D'
+    import { modelStore, texturesStore } from '../data/model'
+
+    let canvas: HTMLCanvasElement;
 
     let scene: THREE.Scene;
     let camera: THREE.PerspectiveCamera;
     let controls: OrbitControls;
     let renderer: THREE.WebGLRenderer;
-    let modelMesh: MinecraftModelMesh
     const clock = new THREE.Clock()
+
+    let modelMesh: MinecraftModelMesh | undefined = undefined
+    let textures: {[textureVariabel: string] : string} | undefined = undefined
 
     // Helpers
     const voxelGrid = new THREE.GridHelper(48, 48, 0x444444, 0x444444)
@@ -20,6 +24,23 @@
         new THREE.EdgesGeometry(new THREE.BoxGeometry(48, 48, 48)).translate(0, 8, 0),
         new THREE.LineBasicMaterial({ color: 0x444444, linewidth: 3 })
     )
+
+    modelStore.subscribe(mesh => {
+        if(modelMesh) {
+            scene.remove(modelMesh)
+        }
+        modelMesh = mesh
+        if(modelMesh) {
+            scene.add(modelMesh)
+        }
+    })
+
+    texturesStore.subscribe(t => textures = t)
+
+    $: if(modelMesh != null && textures != null) {
+        const textureLoader = new MinecraftTextureLoader()
+        modelMesh.resolveTextures(p => textureLoader.load(textures![p]))
+    }
 
     function init () {
         scene = new THREE.Scene()
@@ -63,29 +84,12 @@
 
     init()
 
-    window.addEventListener('message', e => {
-        switch(e.data.command) {
-            case "loadModel":
-                loadModel(e.data.value.model, e.data.value.textures);
-        }
-    });
-
-    function loadModel (model: string, textures: string[]) {
-        new MinecraftModelLoader().load(model, mesh => {
-            const textureLoader = new MinecraftTextureLoader()
-            mesh.resolveTextures(p => textureLoader.load(textures[p]))
-
-            modelMesh = mesh
-            scene.add(modelMesh)
-        })
-    }
-
     function createCardinalDirectionLabels() {
         const loader = new THREE.FontLoader();
         loader.load(MEDIA_ROOT + '/helvetiker_regular.typeface.json', function ( font ) {
             cardinalDirectionLabels = [
                 new Text2D("N", font, [-Math.PI / 2, 0, 0], [-2, 0, -26]),
-                new Text2D("E", font, [0, Math.PI / 2, -Math.PI / 2], [26, 0, 2]),
+                new Text2D("E", font, [0, -Math.PI / 2, -Math.PI / 2], [26, 0, -2]),
                 new Text2D("S", font, [-Math.PI / 2, Math.PI, 0], [2, 0, 26]),
                 new Text2D("W", font, [0, Math.PI / 2, Math.PI / 2], [-26, 0, 2]),
             ]
@@ -96,3 +100,6 @@
         })
     }
 </script>
+
+<canvas
+    bind:this={canvas}/>
