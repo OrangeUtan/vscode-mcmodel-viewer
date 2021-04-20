@@ -30,16 +30,24 @@ export async function findModelAssetsRoots(assetsRoots: vscode.Uri[]) {
         .filter(root => fs.existsSync(root.fsPath));
 }
 
-export async function resolveModelTextures(model: MinecraftModel) {
-    let textures: {[key: string]: vscode.Uri} = {};
-    for(let texture of Object.values(model.textures!)) {
-        for(let root of config.textureAssetsRoots) {
-            const textureUri = vscode.Uri.joinPath(root, texture + ".png");
-            if(fs.existsSync(textureUri.fsPath)) {
-                textures[texture] = textureUri;
+export async function resolveTextureAssets(assets: string[]) {
+    return resolveAssets(assets, '.png', config.textureAssetsRoots);
+}
+
+export async function resolveModelAssets(assets: string[]) {
+    return resolveAssets(assets, '.json', config.textureAssetsRoots);
+}
+
+export async function resolveAssets(assets: string[], fileExtension: string, assetRoots: vscode.Uri[]) {
+    let resolvedAssets: {[assetPath: string]: vscode.Uri} = {};
+    for(const assetPath of assets) {
+        for(const root of assetRoots) {
+            const uri = vscode.Uri.joinPath(root, assetPath + fileExtension);
+            if(fs.existsSync(uri.fsPath)) {
+                resolvedAssets[assetPath] = uri;
                 break;
             }
         }
     }
-    return textures;
+    return resolvedAssets;
 }

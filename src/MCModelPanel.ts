@@ -16,7 +16,7 @@ export class MCModelPanel {
 	public static async loadModel(modelUri: vscode.Uri) {
 		const model = MinecraftModel.fromJson(JSON.parse(fs.readFileSync(modelUri.fsPath).toString()));
 
-		const modelTextures = await minecraft.resolveModelTextures(model);
+		const modelTextures = await minecraft.resolveTextureAssets(Object.values(model.textures!));
 		let webviewModelTextures: {[key: string]: string} = {};
 		for(let key of Object.keys(modelTextures)) {
 			const uri = this.webview?.asWebviewUri(modelTextures[key]).toString();
