@@ -137,9 +137,7 @@ export class MCModelPanel {
 			vscode.Uri.joinPath(this._extensionUri, "out", "compiled", "MCModelViewer.js")
 		);
 
-		// Uri to load styles into webview
-		const stylesResetUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, 'media', 'reset.css'));
-		const stylesMainUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, 'media', 'vscode.css'));
+		const mediaUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, 'media'));
 
         // Use a nonce to only allow specific scripts to be run
 		const nonce = getNonce();
@@ -150,9 +148,11 @@ export class MCModelPanel {
 				<meta charset="UTF-8">
 				<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src ${webview.cspSource}; img-src ${webview.cspSource} https: data:; script-src 'nonce-${nonce}'; connect-src data: vscode-webview-resource:">
 				<meta name="viewport" content="width=device-width, initial-scale=1.0">
-				<link href="${stylesResetUri}" rel="stylesheet">
-				<link href="${stylesMainUri}" rel="stylesheet">
-				<script nonce="${nonce}"></script>
+				<link href="${vscode.Uri.joinPath(mediaUri, 'reset.css')}" rel="stylesheet">
+				<link href="${vscode.Uri.joinPath(mediaUri, 'vscode.css')}" rel="stylesheet">
+				<script nonce="${nonce}">
+					var MEDIA_ROOT = "${mediaUri.toString()}";
+				</script>
 			</head>
 			<body>
 			</body>

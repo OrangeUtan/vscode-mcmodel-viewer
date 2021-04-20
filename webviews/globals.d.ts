@@ -1,0 +1,1 @@
+declare var MEDIA_ROOT: string;

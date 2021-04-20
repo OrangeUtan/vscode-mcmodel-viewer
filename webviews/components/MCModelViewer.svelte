@@ -2,6 +2,8 @@
     import * as THREE from 'three';
     import {OrbitControls} from 'three/examples/jsm/controls/OrbitControls'
     import {MinecraftModelLoader, MinecraftModelMesh, MinecraftTextureLoader} from '@oran9e/three-mcmodel';
+    import { FontLoader } from 'three';
+    import { Text2D } from './Text2D';
 
     let scene: THREE.Scene;
     let camera: THREE.PerspectiveCamera;
@@ -12,6 +14,7 @@
 
     const voxelGrid = new THREE.GridHelper(16*3, 16*3, 0x444444, 0x444444)
     const blockGrid = new THREE.GridHelper(16*3, 3)
+    let cardinalDirectionLabels = []
 
     function init () {
         scene = new THREE.Scene()
@@ -41,6 +44,9 @@
 
         scene.add(voxelGrid)
         scene.add(blockGrid)
+
+        createCardinalDirectionLabels()
+
         animate()
     }
 
@@ -72,6 +78,22 @@
 
             modelMesh = mesh
             scene.add(modelMesh)
+        })
+    }
+
+    function createCardinalDirectionLabels() {
+        const loader = new THREE.FontLoader();
+        loader.load(MEDIA_ROOT + '/helvetiker_regular.typeface.json', function ( font ) {
+            cardinalDirectionLabels = [
+                new Text2D("N", font, [-Math.PI / 2, 0, 0], [-2, 0, -26]),
+                new Text2D("E", font, [0, Math.PI / 2, -Math.PI / 2], [26, 0, 2]),
+                new Text2D("S", font, [-Math.PI / 2, Math.PI, 0], [2, 0, 26]),
+                new Text2D("W", font, [0, Math.PI / 2, Math.PI / 2], [-26, 0, 2]),
+            ]
+
+            for(const label of cardinalDirectionLabels) {
+                scene.add(label)
+            }
         })
     }
 </script>
