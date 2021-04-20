@@ -44,7 +44,28 @@
 				"mcmodel-viewer.assetRoots": {
 					"description": "A list of directories that contain minecraft assets",
 					"type": "array",
-					"default": []
+					"default": [],
+					"uniqueItems": true
+				},
+				"mcmodel-viewer.helpers.showBoundingBox": {
+					"description": "Show bounding box in model preview",
+					"type": "boolean",
+					"default": true
+				},
+				"mcmodel-viewer.helpers.showCardinalDirectionLabeles": {
+					"title": "Show labels for cardinal directions",
+					"type": "boolean",
+					"default": true
+				},
+				"mcmodel-viewer.helpers.show3x3BlocksGrid": {
+					"title": "Show 3x3 Blocks Grid",
+					"type": "boolean",
+					"default": true
+				},
+				"mcmodel-viewer.helpers.showVoxelGrid": {
+					"then": "Show voxel grid",
+					"type": "boolean",
+					"default": true
 				}
 			}
 		}

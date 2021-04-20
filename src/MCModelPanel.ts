@@ -34,6 +34,10 @@ export class MCModelPanel {
 		return true;
 	};
 
+	public static updateHelpersConfiguration(cfg: any) {
+		MCModelPanel.postMessage({command: "updateHelpersConfiguration", value: cfg});
+	}
+
 	static get webview() {
 		return this.currentPanel?._panel.webview;
 	}

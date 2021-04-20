@@ -1,5 +1,6 @@
 {
     "extends": "@tsconfig/svelte/tsconfig.json",
+    "target": "es6",
     "include": ["./**/*", ],
     "exclude": ["../node_modules/*"],
     "compilerOptions": {"strict": true, }

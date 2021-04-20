@@ -4,6 +4,7 @@
     import { MinecraftModelMesh, MinecraftTextureLoader } from '@oran9e/three-mcmodel';
     import { Text2D } from '../utils/Text2D'
     import { modelStore, texturesStore } from '../data/model'
+    import { helpersCfgStore } from '../data/config'
 
     let canvas: HTMLCanvasElement;
 
@@ -19,11 +20,14 @@
     // Helpers
     const voxelGrid = new THREE.GridHelper(48, 48, 0x444444, 0x444444)
     const blockGrid = new THREE.GridHelper(48, 3)
-    let cardinalDirectionLabels = []
+    let cardinalDirectionLabels: Text2D[] = []
+    createCardinalDirectionLabels()
     const boundingBox = new THREE.LineSegments(
         new THREE.EdgesGeometry(new THREE.BoxGeometry(48, 48, 48)).translate(0, 8, 0),
         new THREE.LineBasicMaterial({ color: 0x444444, linewidth: 3 })
     )
+
+    init()
 
     modelStore.subscribe(mesh => {
         if(modelMesh) {
@@ -36,6 +40,13 @@
     })
 
     texturesStore.subscribe(t => textures = t)
+
+    helpersCfgStore.subscribe(cfg => {
+        cfg.showBoundingBox ? scene.add(boundingBox) : scene.remove(boundingBox)
+        cfg.show3x3BlocksGrid ? scene.add(blockGrid) : scene.remove(blockGrid)
+        cfg.showVoxelGrid ? scene.add(voxelGrid) : scene.remove(voxelGrid)
+        cfg.showCardinalDirectionLabeles ? scene.add(...cardinalDirectionLabels) : scene.remove(...cardinalDirectionLabels)
+    });
 
     $: if(modelMesh != null && textures != null) {
         const textureLoader = new MinecraftTextureLoader()
@@ -61,12 +72,6 @@
         controls.enableKeys = false
         controls.screenSpacePanning = true
 
-        // Add helpers
-        scene.add(boundingBox)
-        scene.add(voxelGrid)
-        scene.add(blockGrid)
-        createCardinalDirectionLabels()
-
         animate()
     }
 
@@ -82,8 +87,6 @@
         renderer.render(scene, camera)
     }
 
-    init()
-
     function createCardinalDirectionLabels() {
         const loader = new THREE.FontLoader();
         loader.load(MEDIA_ROOT + '/helvetiker_regular.typeface.json', function ( font ) {
@@ -93,10 +96,6 @@
                 new Text2D("S", font, [-Math.PI / 2, Math.PI, 0], [2, 0, 26]),
                 new Text2D("W", font, [0, Math.PI / 2, Math.PI / 2], [-26, 0, 2]),
             ]
-
-            for(const label of cardinalDirectionLabels) {
-                scene.add(label)
-            }
         })
     }
 </script>
