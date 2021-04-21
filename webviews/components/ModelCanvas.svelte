@@ -50,7 +50,6 @@
     let renderer: THREE.Renderer;
     let composer: EffectComposer;
     let antiAliasingPass: Pass | undefined;
-    const clock = new THREE.Clock()
 
     // Helpers
     const voxelGrid = new THREE.GridHelper(48, 48, 0x444444, 0x444444)
@@ -91,12 +90,6 @@
     }
 
     function animate () {
-        const delta = clock.getDelta();
-
-        if(modelMesh) {
-            modelMesh.updateAnimation(1000 * delta)
-        }
-
         requestAnimationFrame(animate)
         controls.update()
         composer.render()

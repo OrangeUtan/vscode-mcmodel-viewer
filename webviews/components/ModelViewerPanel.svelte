@@ -2,12 +2,27 @@
     import ModelCanvas from './ModelCanvas.svelte'
     import { MinecraftModelLoader, MinecraftModelMesh, MinecraftTexture, MinecraftTextureLoader } from '@oran9e/three-mcmodel';
     import { RendererSettings } from '../data/config'
+    import { onMount } from 'svelte';
+
     const vscode = acquireVsCodeApi();
 
     let modelCanvas: ModelCanvas
     let modelMesh: MinecraftModelMesh | undefined = undefined
     let textures: {[assetPath: string]: MinecraftTexture} = {}
     let rendererSettings = new RendererSettings();
+    let animationFrame = 0
+
+    onMount(async () => {
+        const animationUpdateHandle = setInterval(() => {
+            animationFrame++;
+            if(modelMesh) {
+                modelMesh.setAnimationFrame(animationFrame);
+            }
+        }, 500)
+
+        return () => {
+            clearInterval(animationUpdateHandle)
+        }
     });
 
     window.addEventListener('message', e => {
