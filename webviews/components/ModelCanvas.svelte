@@ -15,6 +15,7 @@
     let scene: THREE.Scene;
     let camera: THREE.PerspectiveCamera;
     let controls: OrbitControls;
+    let renderer: THREE.Renderer;
     let composer: EffectComposer;
     let antiAliasingPass: Pass | undefined;
     const clock = new THREE.Clock()
@@ -68,23 +69,24 @@
         modelMesh.resolveTextures(p => textureLoader.load(textures![p]))
     }
 
+    window.addEventListener('resize', () => {
+        camera.aspect = window.innerWidth / window.innerHeight
+        camera.updateProjectionMatrix()
+        renderer.setSize(window.innerWidth, window.innerHeight)
+        composer.setSize(window.innerWidth, window.innerHeight)
+    })
+
     function initScene () {
         scene = new THREE.Scene()
         camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.01, 1000)
         camera.position.set(0, 48, 48)
 
-        const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true })
+        renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true })
         document.body.appendChild(renderer.domElement)
         renderer.setSize(window.innerWidth, window.innerHeight)
 
-        composer = new EffectComposer(renderer)
+        composer = new EffectComposer(renderer as THREE.WebGLRenderer)
         composer.addPass(new RenderPass(scene, camera));
-
-        window.addEventListener('resize', () => {
-            camera.aspect = window.innerWidth / window.innerHeight
-            camera.updateProjectionMatrix()
-            renderer.setSize(window.innerWidth, window.innerHeight)
-        })
 
         controls = new OrbitControls(camera, renderer.domElement)
         controls.enableKeys = false
