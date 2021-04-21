@@ -116,6 +116,6 @@
 		"webpack-cli": "^4.6.0"
 	},
 	"dependencies": {
-		"@oran9e/three-mcmodel": "^0.0.3"
+		"@oran9e/three-mcmodel": "^0.0.4"
 	}
 }

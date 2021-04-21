@@ -1,8 +1,6 @@
 import * as vscode from 'vscode';
 import * as config from './config';
-import { MinecraftModel } from '@oran9e/three-mcmodel/dist/src/model';
 import * as minecraft from './minecraft';
-import * as fs from 'fs';
 
 export class ModelViewerPanel {
 
@@ -13,25 +11,8 @@ export class ModelViewerPanel {
 	private readonly _extensionUri: vscode.Uri;
 	private _disposables: vscode.Disposable[] = [];
 
-	public static async loadModel(modelUri: vscode.Uri) {
-		const model = MinecraftModel.fromJson(JSON.parse(fs.readFileSync(modelUri.fsPath).toString()));
-
-		const modelTextures = await minecraft.resolveTextureAssets(Object.values(model.textures!));
-		let webviewModelTextures: {[key: string]: string} = {};
-		for(let key of Object.keys(modelTextures)) {
-			const uri = this.webview?.asWebviewUri(modelTextures[key]).toString();
-			if(uri) {
-				webviewModelTextures[key] = uri;
-			}
-		}
-
-		const val = {
-			model: this.webview?.asWebviewUri(modelUri).toString(),
-			textures: webviewModelTextures
-		};
-
-		this.postMessage({command: "loadModel", value: val});
-		return true;
+	public static loadModel(modelUri: vscode.Uri) {
+		this.postMessage({command: "loadModel", value: this.webview?.asWebviewUri(modelUri).toString()});
 	};
 
 	public static updateRendererSettings(cfg: any) {
@@ -103,11 +84,26 @@ export class ModelViewerPanel {
 					case 'alert':
 						vscode.window.showErrorMessage(message.text);
 						return;
+					case 'resolveTextures':
+						this.resolveTextures(message.value)
 				}
 			},
 			null,
 			this._disposables
 		);
+	}
+
+	private async resolveTextures(textureAssetPaths: string[]) {
+		const modelTextures = await minecraft.resolveTextureAssets(textureAssetPaths);
+		let webviewModelTextures: {[key: string]: string} = {};
+		for(let key of Object.keys(modelTextures)) {
+			const uri = this._panel.webview?.asWebviewUri(modelTextures[key]).toString();
+			if(uri) {
+				webviewModelTextures[key] = uri;
+			}
+		}
+
+		ModelViewerPanel.postMessage({command: "resolvedTextures", value: webviewModelTextures})
 	}
 
 	public dispose() {
