@@ -71,10 +71,10 @@
     "@nodelib/fs.scandir" "2.1.4"
     fastq "^1.6.0"
 
-"@oran9e/three-mcmodel@^0.0.2":
-  version "0.0.2"
-  resolved "https://registry.yarnpkg.com/@oran9e/three-mcmodel/-/three-mcmodel-0.0.2.tgz#29dd2008047e02ec42083de29c051273f74fa6b2"
-  integrity sha512-xun592im2CMt/xHQ+qVrTbKjhcAxZZo9EW1kCsVowcZ2jUiEKB255khK5XTZj2rhhm4E285G7SK2lORZBX6DSw==
+"@oran9e/three-mcmodel@^0.0.3":
+  version "0.0.3"
+  resolved "https://registry.yarnpkg.com/@oran9e/three-mcmodel/-/three-mcmodel-0.0.3.tgz#5979f9ac01b6f358e99d07f1a150f8df8991783b"
+  integrity sha512-beV8XDG0XVM4HgE3OP7lEQlaVnYs1s4OzzzOO+AEXGPcfXoG8PpnBOfiQXh3JQ+xswFJOmfyO1LYSOkNPyzmcA==
   dependencies:
     three "^0.127.0"
 

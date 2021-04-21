@@ -1,14 +1,46 @@
 <script lang="ts">
 	import * as THREE from 'three';
     import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
-    import { MinecraftModelMesh, MinecraftTextureLoader } from '@oran9e/three-mcmodel';
+    import type { MinecraftModelMesh } from '@oran9e/three-mcmodel';
     import { Text2D } from '../utils/Text2D'
-    import { modelStore, texturesStore } from '../data/model'
-    import { AntiAliasing, rendererSettingsStore } from '../data/config'
+    import { AntiAliasing, RendererSettings } from '../data/config'
     import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer';
     import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js';
     import { SSAARenderPass } from 'three/examples/jsm/postprocessing/SSAARenderPass';
     import type { Pass } from 'three/examples/jsm/postprocessing/Pass';
+
+    export let modelMesh: MinecraftModelMesh | undefined = undefined
+    let _modelMesh: MinecraftModelMesh | undefined = undefined
+    export let settings: RendererSettings
+
+    // Update model mesh
+    $: {
+        if(_modelMesh) {
+            scene.remove(_modelMesh)
+        }
+        _modelMesh = modelMesh;
+        if(_modelMesh) {
+            scene.add(_modelMesh);
+        }
+    }
+
+    // Update settings
+    $: {
+        settings.showBoundingBox ? scene.add(boundingBox) : scene.remove(boundingBox)
+        settings.show3x3BlocksGrid ? scene.add(blockGrid) : scene.remove(blockGrid)
+        settings.showVoxelGrid ? scene.add(voxelGrid) : scene.remove(voxelGrid)
+        settings.showCardinalDirectionLabels ? scene.add(...cardinalDirectionLabels) : scene.remove(...cardinalDirectionLabels)
+
+        if(antiAliasingPass) {
+            composer.removePass(antiAliasingPass)
+        }
+        switch(settings.anitAliasing) {
+            case AntiAliasing.SSAA:
+                antiAliasingPass = new SSAARenderPass(scene, camera, 0, 0);
+                composer.addPass(antiAliasingPass);
+                break
+        }
+    }
 
     let canvas: HTMLCanvasElement;
 
@@ -19,9 +51,6 @@
     let composer: EffectComposer;
     let antiAliasingPass: Pass | undefined;
     const clock = new THREE.Clock()
-
-    let modelMesh: MinecraftModelMesh | undefined = undefined
-    let textures: {[textureVariabel: string] : string} | undefined = undefined
 
     // Helpers
     const voxelGrid = new THREE.GridHelper(48, 48, 0x444444, 0x444444)
@@ -34,40 +63,6 @@
     )
 
     initScene()
-
-    modelStore.subscribe(mesh => {
-        if(modelMesh) {
-            scene.remove(modelMesh)
-        }
-        modelMesh = mesh
-        if(modelMesh) {
-            scene.add(modelMesh)
-        }
-    })
-
-    texturesStore.subscribe(t => textures = t)
-
-    rendererSettingsStore.subscribe(cfg => {
-        cfg.showBoundingBox ? scene.add(boundingBox) : scene.remove(boundingBox)
-        cfg.show3x3BlocksGrid ? scene.add(blockGrid) : scene.remove(blockGrid)
-        cfg.showVoxelGrid ? scene.add(voxelGrid) : scene.remove(voxelGrid)
-        cfg.showCardinalDirectionLabels ? scene.add(...cardinalDirectionLabels) : scene.remove(...cardinalDirectionLabels)
-
-        if(antiAliasingPass) {
-            composer.removePass(antiAliasingPass)
-        }
-        switch(cfg.anitAliasing) {
-            case AntiAliasing.SSAA:
-                antiAliasingPass = new SSAARenderPass(scene, camera, 0, 0);
-                composer.addPass(antiAliasingPass);
-                break
-        }
-    });
-
-    $: if(modelMesh != null && textures != null) {
-        const textureLoader = new MinecraftTextureLoader()
-        modelMesh.resolveTextures(p => textureLoader.load(textures![p]))
-    }
 
     window.addEventListener('resize', () => {
         camera.aspect = window.innerWidth / window.innerHeight

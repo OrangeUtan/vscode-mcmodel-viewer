@@ -69,7 +69,10 @@
 				},
 				"mcmodel-viewer.renderer.antiAliasing": {
 					"type": "string",
-					"enum": ["Off", "SSAA"],
+					"enum": [
+						"Off",
+						"SSAA"
+					],
 					"default": "SSAA"
 				}
 			}
@@ -113,6 +116,6 @@
 		"webpack-cli": "^4.6.0"
 	},
 	"dependencies": {
-		"@oran9e/three-mcmodel": "^0.0.2"
+		"@oran9e/three-mcmodel": "^0.0.3"
 	}
 }
