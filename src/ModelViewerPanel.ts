@@ -132,9 +132,9 @@ export class ModelViewerPanel {
 	}
 
     private _getHtmlForWebview(webview: vscode.Webview) {
-		const scriptUri = webview.asWebviewUri(
-			vscode.Uri.joinPath(this._extensionUri, "out", "compiled", "MCModelViewer.js")
-		);
+		const compiledDirUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "out", "compiled"));
+		const scriptUri = vscode.Uri.joinPath(compiledDirUri, "MCModelViewer.js");
+		const bundleCSSUri = vscode.Uri.joinPath(compiledDirUri, "bundle.css");
 
 		const mediaUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, 'media'));
 
@@ -143,19 +143,20 @@ export class ModelViewerPanel {
 
         return `<!DOCTYPE html>
 			<html lang="en">
-			<head>
-				<meta charset="UTF-8">
-				<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src ${webview.cspSource}; img-src ${webview.cspSource} https: data:; script-src 'nonce-${nonce}'; connect-src data: vscode-webview-resource:">
-				<meta name="viewport" content="width=device-width, initial-scale=1.0">
-				<link href="${vscode.Uri.joinPath(mediaUri, 'reset.css')}" rel="stylesheet">
-				<link href="${vscode.Uri.joinPath(mediaUri, 'vscode.css')}" rel="stylesheet">
-				<script nonce="${nonce}">
-					var MEDIA_ROOT = "${mediaUri.toString()}";
-				</script>
-			</head>
-			<body>
-			</body>
-			<script src="${scriptUri}" nonce="${nonce}"></script>
+				<head>
+					<meta charset="UTF-8">
+					<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src ${webview.cspSource}; img-src ${webview.cspSource} https: data:; script-src 'nonce-${nonce}'; connect-src data: vscode-webview-resource:">
+					<meta name="viewport" content="width=device-width, initial-scale=1.0">
+					<link href="${vscode.Uri.joinPath(mediaUri, 'reset.css')}" rel="stylesheet">
+					<link href="${vscode.Uri.joinPath(mediaUri, 'vscode.css')}" rel="stylesheet">
+					<link href="${bundleCSSUri}" rel="stylesheet">
+					<script nonce="${nonce}">
+						var MEDIA_ROOT = "${mediaUri.toString()}";
+					</script>
+				</head>
+				<body>
+				</body>
+				<script src="${scriptUri}" nonce="${nonce}"></script>
 			</html>`;
 	}
 }
