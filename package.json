@@ -11,16 +11,16 @@
 	],
 	"activationEvents": [
 		"onLanguage:json",
-		"onCommand:mcmodel-viewer.showPreview",
+		"onCommand:mcmodel-viewer.showInViewer",
 		"onCommand:mcmodel-viewer.refresh"
 	],
 	"main": "./dist/extension.js",
 	"contributes": {
 		"commands": [
 			{
-				"command": "mcmodel-viewer.showPreview",
+				"command": "mcmodel-viewer.showInViewer",
 				"category": "MCModel-Viewer",
-				"title": "Show Model Preview",
+				"title": "Open model in viewer",
 				"icon": "$(open-preview)"
 			},
 			{
@@ -33,7 +33,7 @@
 			"editor/title": [
 				{
 					"when": "resourceLangId == json && mcmodel-viewer.activeTextEditorIsModel",
-					"command": "mcmodel-viewer.showPreview",
+					"command": "mcmodel-viewer.showInViewer",
 					"group": "navigation"
 				}
 			]
@@ -48,7 +48,7 @@
 					"uniqueItems": true
 				},
 				"mcmodel-viewer.renderer.showBoundingBox": {
-					"description": "Show bounding box in model preview",
+					"description": "Show bounding box",
 					"type": "boolean",
 					"default": true
 				},

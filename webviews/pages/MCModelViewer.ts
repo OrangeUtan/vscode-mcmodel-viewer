@@ -1,4 +1,4 @@
-import App from "../components/ModelPreviewPanel.svelte";
+import App from "../components/ModelViewerPanel.svelte";
 
 const app = new App({
   target: document.body,

@@ -4,10 +4,10 @@ import { MinecraftModel } from '@oran9e/three-mcmodel/dist/src/model';
 import * as minecraft from './minecraft';
 import * as fs from 'fs';
 
-export class MCModelPanel {
+export class ModelViewerPanel {
 
-    public static currentPanel?: MCModelPanel;
-    public static readonly viewType = "mcmodel-viewer.preview";
+    public static currentPanel?: ModelViewerPanel;
+    public static readonly viewType = "mcmodel-viewer.viewer";
 
     private readonly _panel: vscode.WebviewPanel;
 	private readonly _extensionUri: vscode.Uri;
@@ -35,7 +35,7 @@ export class MCModelPanel {
 	};
 
 	public static updateRendererSettings(cfg: any) {
-		MCModelPanel.postMessage({command: "updateRendererSettings", value: cfg});
+		ModelViewerPanel.postMessage({command: "updateRendererSettings", value: cfg});
 	}
 
 	static get webview() {
@@ -46,8 +46,8 @@ export class MCModelPanel {
 		const column = vscode.ViewColumn.Beside;
 
 		// If we already have a panel, show it.
-		if (MCModelPanel.currentPanel) {
-			MCModelPanel.currentPanel._panel.reveal(column);
+		if (ModelViewerPanel.currentPanel) {
+			ModelViewerPanel.currentPanel._panel.reveal(column);
 			return;
 		}
 
@@ -60,7 +60,7 @@ export class MCModelPanel {
 
 		// Otherwise, create a new panel.
 		const panel = vscode.window.createWebviewPanel(
-			MCModelPanel.viewType,
+			ModelViewerPanel.viewType,
 			'MCModel Viewer',
 			column,
 			{
@@ -69,16 +69,16 @@ export class MCModelPanel {
             }
 		);
 
-		MCModelPanel.currentPanel = new MCModelPanel(panel, extensionUri);
+		ModelViewerPanel.currentPanel = new ModelViewerPanel(panel, extensionUri);
 	}
 
     public static kill() {
-        MCModelPanel.currentPanel?.dispose();
-        MCModelPanel.currentPanel = undefined;
+        ModelViewerPanel.currentPanel?.dispose();
+        ModelViewerPanel.currentPanel = undefined;
     }
 
     public static revive(panel: vscode.WebviewPanel, extensionUri: vscode.Uri) {
-		MCModelPanel.currentPanel = new MCModelPanel(panel, extensionUri);
+		ModelViewerPanel.currentPanel = new ModelViewerPanel(panel, extensionUri);
 	}
 
 	public static postMessage(message: any) {
@@ -111,7 +111,7 @@ export class MCModelPanel {
 	}
 
 	public dispose() {
-		MCModelPanel.currentPanel = undefined;
+		ModelViewerPanel.currentPanel = undefined;
 
 		// Clean up our resources
 		this._panel.dispose();
