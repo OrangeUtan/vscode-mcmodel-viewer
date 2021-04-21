@@ -1,8 +1,8 @@
 <script lang="ts">
-    import { MinecraftModelLoader, MinecraftModelMesh } from '@oran9e/three-mcmodel';
+    import { MinecraftModelLoader } from '@oran9e/three-mcmodel';
     import ModelCanvas from './ModelCanvas.svelte'
     import { modelStore, texturesStore } from '../data/model'
-    import { helpersCfgStore } from '../data/config'
+    import { rendererSettingsStore } from '../data/config'
 
     let modelCanvas: ModelCanvas
 
@@ -15,8 +15,8 @@
                     console.log("Loaded model");
                 })
                 break;
-                case "updateHelpersConfiguration":
-                    helpersCfgStore.set(e.data.value)
+                case "updateRendererSettings":
+                    rendererSettingsStore.set(e.data.value)
         }
     });
 

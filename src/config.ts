@@ -1,6 +1,8 @@
 import * as vscode from 'vscode';
 import * as minecraft from './minecraft';
 
+export const RENDERER_SECTION = "mcmodel-viewer.renderer";
+
 export let assetRoots: vscode.Uri[] = [];
 export let textureAssetsRoots: Array<vscode.Uri> = [];
 export let modelAssetsRoots: Array<vscode.Uri> = [];
@@ -12,10 +14,10 @@ export function getAssetRoots(): vscode.Uri[] {
 
 export function getHelperConfiguration() {
 	return {
-		showBoundingBox: vscode.workspace.getConfiguration("mcmodel-viewer.helpers").get("showBoundingBox"),
-		showCardinalDirectionLabeles: vscode.workspace.getConfiguration("mcmodel-viewer.helpers").get("showCardinalDirectionLabeles"),
-		show3x3BlocksGrid: vscode.workspace.getConfiguration("mcmodel-viewer.helpers").get("show3x3BlocksGrid"),
-		showVoxelGrid: vscode.workspace.getConfiguration("mcmodel-viewer.helpers").get("showVoxelGrid")
+		showBoundingBox: vscode.workspace.getConfiguration(RENDERER_SECTION).get("showBoundingBox"),
+		showCardinalDirectionLabels: vscode.workspace.getConfiguration(RENDERER_SECTION).get("showCardinalDirectionLabels"),
+		show3x3BlocksGrid: vscode.workspace.getConfiguration(RENDERER_SECTION).get("show3x3BlocksGrid"),
+		showVoxelGrid: vscode.workspace.getConfiguration(RENDERER_SECTION).get("showVoxelGrid")
 	};
 }
 
@@ -29,8 +31,8 @@ export function createConfigurationListeners() {
 			}
 		}),
         vscode.workspace.onDidChangeConfiguration((e) => {
-			if(e.affectsConfiguration("mcmodel-viewer.helpers")) {
-				notifyConfigChanged("mcmodel-viewer.helpers");
+			if(e.affectsConfiguration(RENDERER_SECTION)) {
+				notifyConfigChanged(RENDERER_SECTION);
 			}
 		})
     ];

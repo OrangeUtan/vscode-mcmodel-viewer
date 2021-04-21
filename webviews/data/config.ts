@@ -1,12 +1,12 @@
 import { writable } from 'svelte/store';
 
-export class HelperConfiguration {
+export class RendererSettings {
 	constructor(
 		public showBoundingBox = true,
-		public showCardinalDirectionLabeles = true,
+		public showCardinalDirectionLabels = true,
 		public show3x3BlocksGrid = true,
 		public showVoxelGrid = true
 	) {}
 }
 
-export const helpersCfgStore = writable<HelperConfiguration>(new HelperConfiguration());
+export const rendererSettingsStore = writable<RendererSettings>(new RendererSettings());

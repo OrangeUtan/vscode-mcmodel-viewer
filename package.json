@@ -47,22 +47,22 @@
 					"default": [],
 					"uniqueItems": true
 				},
-				"mcmodel-viewer.helpers.showBoundingBox": {
+				"mcmodel-viewer.renderer.showBoundingBox": {
 					"description": "Show bounding box in model preview",
 					"type": "boolean",
 					"default": true
 				},
-				"mcmodel-viewer.helpers.showCardinalDirectionLabeles": {
+				"mcmodel-viewer.renderer.showCardinalDirectionLabels": {
 					"title": "Show labels for cardinal directions",
 					"type": "boolean",
 					"default": true
 				},
-				"mcmodel-viewer.helpers.show3x3BlocksGrid": {
+				"mcmodel-viewer.renderer.show3x3BlocksGrid": {
 					"title": "Show 3x3 Blocks Grid",
 					"type": "boolean",
 					"default": true
 				},
-				"mcmodel-viewer.helpers.showVoxelGrid": {
+				"mcmodel-viewer.renderer.showVoxelGrid": {
 					"then": "Show voxel grid",
 					"type": "boolean",
 					"default": true

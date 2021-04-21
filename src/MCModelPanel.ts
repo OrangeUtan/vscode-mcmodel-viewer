@@ -34,8 +34,8 @@ export class MCModelPanel {
 		return true;
 	};
 
-	public static updateHelpersConfiguration(cfg: any) {
-		MCModelPanel.postMessage({command: "updateHelpersConfiguration", value: cfg});
+	public static updateRendererSettings(cfg: any) {
+		MCModelPanel.postMessage({command: "updateRendererSettings", value: cfg});
 	}
 
 	static get webview() {

@@ -4,7 +4,7 @@
     import { MinecraftModelMesh, MinecraftTextureLoader } from '@oran9e/three-mcmodel';
     import { Text2D } from '../utils/Text2D'
     import { modelStore, texturesStore } from '../data/model'
-    import { helpersCfgStore } from '../data/config'
+    import { rendererSettingsStore } from '../data/config'
 
     let canvas: HTMLCanvasElement;
 
@@ -41,11 +41,11 @@
 
     texturesStore.subscribe(t => textures = t)
 
-    helpersCfgStore.subscribe(cfg => {
+    rendererSettingsStore.subscribe(cfg => {
         cfg.showBoundingBox ? scene.add(boundingBox) : scene.remove(boundingBox)
         cfg.show3x3BlocksGrid ? scene.add(blockGrid) : scene.remove(blockGrid)
         cfg.showVoxelGrid ? scene.add(voxelGrid) : scene.remove(voxelGrid)
-        cfg.showCardinalDirectionLabeles ? scene.add(...cardinalDirectionLabels) : scene.remove(...cardinalDirectionLabels)
+        cfg.showCardinalDirectionLabels ? scene.add(...cardinalDirectionLabels) : scene.remove(...cardinalDirectionLabels)
     });
 
     $: if(modelMesh != null && textures != null) {

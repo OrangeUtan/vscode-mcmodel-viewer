@@ -12,8 +12,8 @@ export async function activate(context: vscode.ExtensionContext) {
 	// Listen to configuration changes
 	context.subscriptions.push(
 		...config.createConfigurationListeners(),
-		config.subscribeConfiguration("mcmodel-viewer.helpers", () => {
-			MCModelPanel.updateHelpersConfiguration(config.getHelperConfiguration());
+		config.subscribeConfiguration(config.RENDERER_SECTION, () => {
+			MCModelPanel.updateRendererSettings(config.getHelperConfiguration());
 		})
 	);
 
@@ -25,7 +25,7 @@ export async function activate(context: vscode.ExtensionContext) {
 
 			MCModelPanel.createOrShow(context.extensionUri);
 			MCModelPanel.loadModel(modelUri);
-			MCModelPanel.updateHelpersConfiguration(config.getHelperConfiguration());
+			MCModelPanel.updateRendererSettings(config.getHelperConfiguration());
 		}),
 		vscode.commands.registerCommand('mcmodel-viewer.refresh', () => {
 			MCModelPanel.kill();
