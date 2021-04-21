@@ -2,7 +2,7 @@
     import { MinecraftModelLoader } from '@oran9e/three-mcmodel';
     import ModelCanvas from './ModelCanvas.svelte'
     import { modelStore, texturesStore } from '../data/model'
-    import { rendererSettingsStore } from '../data/config'
+    import { RendererSettings, rendererSettingsStore } from '../data/config'
 
     let modelCanvas: ModelCanvas
 
@@ -12,11 +12,17 @@
                 new MinecraftModelLoader().load(e.data.value.model, mesh => {
                     texturesStore.set(e.data.value.textures)
                     modelStore.set(mesh)
-                    console.log("Loaded model");
                 })
                 break;
                 case "updateRendererSettings":
-                    rendererSettingsStore.set(e.data.value)
+                    const settings = e.data.value
+                    rendererSettingsStore.set(new RendererSettings(
+                        settings.showBoundingBox,
+                        settings.showCardinalDirectionLabels,
+                        settings.show3x3BlocksGrid,
+                        settings.showVoxelGrid,
+                        settings.antiAliasing,
+                    ))
         }
     });
 

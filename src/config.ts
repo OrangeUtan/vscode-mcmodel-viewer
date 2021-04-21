@@ -17,7 +17,8 @@ export function getHelperConfiguration() {
 		showBoundingBox: vscode.workspace.getConfiguration(RENDERER_SECTION).get("showBoundingBox"),
 		showCardinalDirectionLabels: vscode.workspace.getConfiguration(RENDERER_SECTION).get("showCardinalDirectionLabels"),
 		show3x3BlocksGrid: vscode.workspace.getConfiguration(RENDERER_SECTION).get("show3x3BlocksGrid"),
-		showVoxelGrid: vscode.workspace.getConfiguration(RENDERER_SECTION).get("showVoxelGrid")
+		showVoxelGrid: vscode.workspace.getConfiguration(RENDERER_SECTION).get("showVoxelGrid"),
+		antiAliasing: vscode.workspace.getConfiguration(RENDERER_SECTION).get("antiAliasing"),
 	};
 }
 

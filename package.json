@@ -53,19 +53,24 @@
 					"default": true
 				},
 				"mcmodel-viewer.renderer.showCardinalDirectionLabels": {
-					"title": "Show labels for cardinal directions",
+					"description": "Show labels for cardinal directions",
 					"type": "boolean",
 					"default": true
 				},
 				"mcmodel-viewer.renderer.show3x3BlocksGrid": {
-					"title": "Show 3x3 Blocks Grid",
+					"description": "Show 3x3 Blocks Grid",
 					"type": "boolean",
 					"default": true
 				},
 				"mcmodel-viewer.renderer.showVoxelGrid": {
-					"then": "Show voxel grid",
+					"description": "Show voxel grid",
 					"type": "boolean",
 					"default": true
+				},
+				"mcmodel-viewer.renderer.antiAliasing": {
+					"type": "string",
+					"enum": ["Off", "SSAA"],
+					"default": "SSAA"
 				}
 			}
 		}

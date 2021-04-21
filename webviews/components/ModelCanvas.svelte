@@ -4,14 +4,19 @@
     import { MinecraftModelMesh, MinecraftTextureLoader } from '@oran9e/three-mcmodel';
     import { Text2D } from '../utils/Text2D'
     import { modelStore, texturesStore } from '../data/model'
-    import { rendererSettingsStore } from '../data/config'
+    import { AntiAliasing, rendererSettingsStore } from '../data/config'
+    import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer';
+    import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js';
+    import { SSAARenderPass } from 'three/examples/jsm/postprocessing/SSAARenderPass';
+    import type { Pass } from 'three/examples/jsm/postprocessing/Pass';
 
     let canvas: HTMLCanvasElement;
 
     let scene: THREE.Scene;
     let camera: THREE.PerspectiveCamera;
     let controls: OrbitControls;
-    let renderer: THREE.WebGLRenderer;
+    let composer: EffectComposer;
+    let antiAliasingPass: Pass | undefined;
     const clock = new THREE.Clock()
 
     let modelMesh: MinecraftModelMesh | undefined = undefined
@@ -27,7 +32,7 @@
         new THREE.LineBasicMaterial({ color: 0x444444, linewidth: 3 })
     )
 
-    init()
+    initScene()
 
     modelStore.subscribe(mesh => {
         if(modelMesh) {
@@ -46,6 +51,16 @@
         cfg.show3x3BlocksGrid ? scene.add(blockGrid) : scene.remove(blockGrid)
         cfg.showVoxelGrid ? scene.add(voxelGrid) : scene.remove(voxelGrid)
         cfg.showCardinalDirectionLabels ? scene.add(...cardinalDirectionLabels) : scene.remove(...cardinalDirectionLabels)
+
+        if(antiAliasingPass) {
+            composer.removePass(antiAliasingPass)
+        }
+        switch(cfg.anitAliasing) {
+            case AntiAliasing.SSAA:
+                antiAliasingPass = new SSAARenderPass(scene, camera, 0, 0);
+                composer.addPass(antiAliasingPass);
+                break
+        }
     });
 
     $: if(modelMesh != null && textures != null) {
@@ -53,14 +68,17 @@
         modelMesh.resolveTextures(p => textureLoader.load(textures![p]))
     }
 
-    function init () {
+    function initScene () {
         scene = new THREE.Scene()
         camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.01, 1000)
         camera.position.set(0, 48, 48)
 
-        renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true })
+        const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true })
         document.body.appendChild(renderer.domElement)
         renderer.setSize(window.innerWidth, window.innerHeight)
+
+        composer = new EffectComposer(renderer)
+        composer.addPass(new RenderPass(scene, camera));
 
         window.addEventListener('resize', () => {
             camera.aspect = window.innerWidth / window.innerHeight
@@ -84,7 +102,7 @@
 
         requestAnimationFrame(animate)
         controls.update()
-        renderer.render(scene, camera)
+        composer.render()
     }
 
     function createCardinalDirectionLabels() {
