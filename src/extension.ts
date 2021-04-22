@@ -3,6 +3,7 @@ import { ModelViewerPanel } from './ModelViewerPanel';
 import * as config from './config';
 import * as utils from './utils';
 
+let currentlyModel: vscode.Uri | undefined = undefined;
 
 export async function activate(context: vscode.ExtensionContext) {
 	context.subscriptions.push(
@@ -21,11 +22,7 @@ export async function activate(context: vscode.ExtensionContext) {
 	context.subscriptions.push(
 		vscode.commands.registerCommand('mcmodel-viewer.showInViewer', async () => {
 			if(!vscode.window.activeTextEditor) {return;}
-			const modelUri = vscode.window.activeTextEditor.document.uri;
-
-			ModelViewerPanel.createOrShow(context.extensionUri);
-			ModelViewerPanel.loadModel(modelUri);
-			ModelViewerPanel.updateRendererSettings(config.getHelperConfiguration());
+			loadModel(vscode.window.activeTextEditor.document.uri, context);
 		}),
 		vscode.commands.registerCommand('mcmodel-viewer.refresh', () => {
 			ModelViewerPanel.kill();
@@ -36,9 +33,24 @@ export async function activate(context: vscode.ExtensionContext) {
 			}, 500);
 		})
 	);
+
+	context.subscriptions.push(
+		vscode.workspace.onDidSaveTextDocument((e) => {
+			if(currentlyModel && e.uri === currentlyModel) {
+				loadModel(currentlyModel, context);
+			}
+		}),
+	);
 }
 
 export function deactivate() {}
+
+function loadModel(modelUri: vscode.Uri, context: vscode.ExtensionContext) {
+	currentlyModel = modelUri;
+	ModelViewerPanel.createOrShow(context.extensionUri);
+	ModelViewerPanel.loadModel(modelUri);
+	ModelViewerPanel.updateRendererSettings(config.getHelperConfiguration());
+}
 
 function onChangedActiveTextEditor(editor?: vscode.TextEditor) {
 	const val = editor ? isModelFile(editor) : false;

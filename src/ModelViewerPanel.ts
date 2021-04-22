@@ -33,7 +33,7 @@ export class ModelViewerPanel {
 
 		// If we already have a panel, show it.
 		if (ModelViewerPanel.currentPanel) {
-			ModelViewerPanel.currentPanel._panel.reveal(column);
+			ModelViewerPanel.currentPanel._panel.reveal(column, true);
 			return;
 		}
 
