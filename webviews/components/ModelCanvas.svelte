@@ -8,10 +8,16 @@
     import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js';
     import { SSAARenderPass } from 'three/examples/jsm/postprocessing/SSAARenderPass';
     import type { Pass } from 'three/examples/jsm/postprocessing/Pass';
+    import { onMount } from 'svelte';
 
     export let modelMesh: MinecraftModelMesh | undefined = undefined
     let _modelMesh: MinecraftModelMesh | undefined = undefined
     export let settings: RendererSettings
+
+    onMount(async () => {
+        initScene()
+        window.addEventListener('resize', () => resizeRendererToDisplaySize())
+    })
 
     // Update model mesh
     $: {
@@ -25,7 +31,7 @@
     }
 
     // Update settings
-    $: {
+    $: if(scene != null) {
         settings.showBoundingBox ? scene.add(boundingBox) : scene.remove(boundingBox)
         settings.show3x3BlocksGrid ? scene.add(blockGrid) : scene.remove(blockGrid)
         settings.showVoxelGrid ? scene.add(voxelGrid) : scene.remove(voxelGrid)
@@ -61,26 +67,15 @@
         new THREE.LineBasicMaterial({ color: 0x444444, linewidth: 3 })
     )
 
-    initScene()
-
-    window.addEventListener('resize', () => {
-        camera.aspect = window.innerWidth / window.innerHeight
-        camera.updateProjectionMatrix()
-        renderer.setSize(window.innerWidth, window.innerHeight)
-        composer.setSize(window.innerWidth, window.innerHeight)
-    })
-
     function initScene () {
         scene = new THREE.Scene()
         camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.01, 1000)
         camera.position.set(0, 48, 48)
 
-        renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true })
-        document.body.appendChild(renderer.domElement)
-        renderer.setSize(window.innerWidth, window.innerHeight)
-
+        renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, canvas })
         composer = new EffectComposer(renderer as THREE.WebGLRenderer)
         composer.addPass(new RenderPass(scene, camera));
+        resizeRendererToDisplaySize()
 
         controls = new OrbitControls(camera, renderer.domElement)
         controls.enableKeys = false
@@ -93,6 +88,19 @@
         requestAnimationFrame(animate)
         controls.update()
         composer.render()
+    }
+
+    function resizeRendererToDisplaySize() {
+        const pixelRatio = window.devicePixelRatio;
+        const width = canvas.clientWidth * pixelRatio, height = canvas.clientHeight * pixelRatio
+
+        if(canvas.width !== width ||  canvas.height != height) {
+            renderer.setSize(width, height, false)
+            composer.setSize(width, height)
+
+            camera.aspect = width / height
+            camera.updateProjectionMatrix()
+        }
     }
 
     function createCardinalDirectionLabels() {
@@ -108,5 +116,12 @@
     }
 </script>
 
-<canvas
-    bind:this={canvas}/>
+<style lang="scss">
+    canvas {
+        width: 100%;
+		height: 100%;
+        display: block;
+    }
+</style>
+
+<canvas bind:this={canvas}/>

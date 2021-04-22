@@ -72,4 +72,18 @@
 
 </script>
 
-<ModelCanvas bind:this={modelCanvas} {modelMesh} settings={rendererSettings} />
+<style lang="scss">
+    :global(body) {
+        height: 100vh;
+        width: 100vw;
+    }
+
+    #container {
+        height: 100%;
+        width: 100%;
+    }
+</style>
+
+<div id="container">
+    <ModelCanvas bind:this={modelCanvas} {modelMesh} settings={rendererSettings} />
+</div>
