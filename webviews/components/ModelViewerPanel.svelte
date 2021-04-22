@@ -1,6 +1,6 @@
 <script lang="ts">
     import ModelCanvas from './ModelCanvas.svelte'
-    import { MinecraftModelLoader, MinecraftModelMesh, MinecraftTexture, MinecraftTextureLoader } from '@oran9e/three-mcmodel';
+    import { MinecraftModel, MinecraftModelLoader, MinecraftModelMesh, MinecraftTexture, MinecraftTextureLoader } from '@oran9e/three-mcmodel';
     import { RendererSettings } from '../data/config'
     import { onMount } from 'svelte';
 
@@ -28,10 +28,10 @@
     window.addEventListener('message', e => {
         switch(e.data.command) {
             case "loadModel":
-                ((async () => loadModel(e.data.value)))();
+                (async () => loadModel(e.data.value))();
                 break;
             case "resolvedTextures":
-                ((async () => loadTextures(e.data.value)))();
+                (async () => loadTextures(e.data.value))();
                 break;
             case "updateRendererSettings":
                 updateRendererSettings(e.data.value)
@@ -40,7 +40,13 @@
     });
 
     async function loadModel(modelUrl: string) {
-        const model = await new MinecraftModelLoader().load(modelUrl)
+        let model: MinecraftModel;
+        try {
+            model = await new MinecraftModelLoader().load(modelUrl)
+        } catch(e) {
+            showError(`Loading model failed: ${e.message}`)
+            return;
+        }
         modelMesh = new MinecraftModelMesh(model)
 
         if(model.textures) {
@@ -53,7 +59,13 @@
         const loadedTextures: {[assetPath: string]: MinecraftTexture} = {}
 
         for(const assetPath in textureUrls) {
-            loadedTextures[assetPath] = await textureLoader.load(textureUrls[assetPath])
+            const url = textureUrls[assetPath]
+            try {
+                loadedTextures[assetPath] = await textureLoader.load(url)
+            } catch(e) {
+                showError(`Failed loading texture: ${assetPath}. System path: ${url}`)
+                continue;
+            }
         }
 
         textures = loadedTextures
@@ -68,6 +80,10 @@
             settings.showVoxelGrid,
             settings.antiAliasing,
         )
+    }
+
+    function showError(text: string) {
+        vscode.postMessage({command: 'error', text})
     }
 
 </script>

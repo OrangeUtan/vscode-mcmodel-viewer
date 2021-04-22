@@ -86,11 +86,12 @@ export class ModelViewerPanel {
 		this._panel.webview.onDidReceiveMessage(
 			message => {
 				switch (message.command) {
-					case 'alert':
-						vscode.window.showErrorMessage(message.text);
-						return;
 					case 'resolveTextures':
-						this.resolveTextures(message.value)
+						this.resolveTextures(message.value);
+						break;
+					case 'error':
+						vscode.window.showErrorMessage(message.text);
+						break;
 				}
 			},
 			null,
@@ -108,7 +109,7 @@ export class ModelViewerPanel {
 			}
 		}
 
-		ModelViewerPanel.postMessage({command: "resolvedTextures", value: webviewModelTextures})
+		ModelViewerPanel.postMessage({command: "resolvedTextures", value: webviewModelTextures});
 	}
 
 	public dispose() {
