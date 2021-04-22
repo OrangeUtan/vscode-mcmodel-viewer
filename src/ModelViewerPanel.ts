@@ -1,6 +1,8 @@
 import * as vscode from 'vscode';
 import * as config from './config';
 import * as minecraft from './minecraft';
+import * as path from 'path';
+
 
 export class ModelViewerPanel {
 
@@ -12,7 +14,10 @@ export class ModelViewerPanel {
 	private _disposables: vscode.Disposable[] = [];
 
 	public static loadModel(modelUri: vscode.Uri) {
-		this.postMessage({command: "loadModel", value: this.webview?.asWebviewUri(modelUri).toString()});
+		if(this.currentPanel) {
+			this.currentPanel._panel.title = path.basename(modelUri.path.toString());
+			this.postMessage({command: "loadModel", value: this.webview?.asWebviewUri(modelUri).toString()});
+		}
 	};
 
 	public static updateRendererSettings(cfg: any) {
@@ -42,10 +47,10 @@ export class ModelViewerPanel {
 		// Otherwise, create a new panel.
 		const panel = vscode.window.createWebviewPanel(
 			ModelViewerPanel.viewType,
-			'MCModel Viewer',
+			'Minecraft Model Viewer',
 			column,
 			{
-                enableScripts: true, // Enable Javascript in webview,
+                enableScripts: true,
 				localResourceRoots
             }
 		);
