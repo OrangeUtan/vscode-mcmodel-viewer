@@ -3,6 +3,7 @@
     import { MinecraftModel, MinecraftModelLoader, MinecraftModelMesh, MinecraftTexture, MinecraftTextureLoader } from '@oran9e/three-mcmodel';
     import { RendererSettings } from '../data/config'
     import { onMount } from 'svelte';
+    import { Animator } from '../utils/Animator';
 
     const vscode = acquireVsCodeApi();
 
@@ -10,18 +11,12 @@
     let modelMesh: MinecraftModelMesh | undefined = undefined
     let textures: {[assetPath: string]: MinecraftTexture} = {}
     let rendererSettings = new RendererSettings();
-    let animationFrame = 0
+
+    let animator = new Animator();
 
     onMount(async () => {
-        const animationUpdateHandle = setInterval(() => {
-            animationFrame++;
-            if(modelMesh) {
-                modelMesh.setAnimationFrame(animationFrame);
-            }
-        }, 500)
-
         return () => {
-            clearInterval(animationUpdateHandle)
+            animator.stop();
         }
     });
 
@@ -70,6 +65,11 @@
 
         textures = loadedTextures
         modelMesh?.resolveTextures((assetPath) =>  textures[assetPath])
+
+        animator.stop();
+        if(modelMesh?.isAnimated()) {
+            animator.start((frame) => modelMesh?.setAnimationFrame(frame), 500, modelMesh?.getAnimationPeriod() ?? 1)
+        }
     }
 
     function updateRendererSettings(settings: any) {
