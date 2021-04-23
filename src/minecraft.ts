@@ -39,8 +39,9 @@ export async function resolveModelAssets(assets: string[]) {
 }
 
 export async function resolveAssets(assets: string[], fileExtension: string, assetRoots: vscode.Uri[]) {
-    let resolvedAssets: {[assetPath: string]: vscode.Uri} = {};
+    let resolvedAssets: {[assetPath: string]: vscode.Uri | undefined} = {};
     for(const assetPath of assets) {
+        resolvedAssets[assetPath] = undefined;
         for(const root of assetRoots) {
             const uri = vscode.Uri.joinPath(root, assetPath + fileExtension);
             if(fs.existsSync(uri.fsPath)) {

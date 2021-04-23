@@ -4,8 +4,7 @@
     import { RendererSettings } from '../data/config'
     import { onMount } from 'svelte';
     import { Animator } from '../utils/Animator';
-
-    const vscode = acquireVsCodeApi();
+    import { AssetResolver, showError } from '../extensionApi';
 
     let modelCanvas: ModelCanvas
     let modelMesh: MinecraftModelMesh | undefined = undefined
@@ -25,9 +24,6 @@
             case "loadModel":
                 (async () => loadModel(e.data.value))();
                 break;
-            case "resolvedTextures":
-                (async () => loadTextures(e.data.value))();
-                break;
             case "updateRendererSettings":
                 updateRendererSettings(e.data.value)
                 break;
@@ -45,16 +41,22 @@
         modelMesh = new MinecraftModelMesh(model)
 
         if(model.textures) {
-            vscode.postMessage({command: "resolveTextures", value: Object.values(model.textures)});
+            AssetResolver.resolveAssets(Object.values(model.textures), "texture")
+                .then((textureUrls) => loadTextures(textureUrls))
         }
     }
 
-    async function loadTextures(textureUrls: any) {
+    async function loadTextures(textureUrls: {[assetPath: string]: string | null}) {
         const textureLoader = new MinecraftTextureLoader();
         const loadedTextures: {[assetPath: string]: MinecraftTexture} = {}
 
         for(const assetPath in textureUrls) {
             const url = textureUrls[assetPath]
+            if(url == null) {
+                showError(`Couldn't resolve texture: ${assetPath}`)
+                continue;
+            }
+
             try {
                 loadedTextures[assetPath] = await textureLoader.load(url)
             } catch(e) {
@@ -81,11 +83,6 @@
             settings.antiAliasing,
         )
     }
-
-    function showError(text: string) {
-        vscode.postMessage({command: 'error', text})
-    }
-
 </script>
 
 <style lang="scss">

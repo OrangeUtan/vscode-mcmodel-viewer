@@ -86,8 +86,9 @@ export class ModelViewerPanel {
 		this._panel.webview.onDidReceiveMessage(
 			message => {
 				switch (message.command) {
-					case 'resolveTextures':
-						this.resolveTextures(message.value);
+					case 'resolveAssets':
+						console.log("command resolveAssets");
+						this.resolveAssets(message.assetPaths, message.assetType, message.requestID);
 						break;
 					case 'error':
 						vscode.window.showErrorMessage(message.text);
@@ -99,17 +100,28 @@ export class ModelViewerPanel {
 		);
 	}
 
-	private async resolveTextures(textureAssetPaths: string[]) {
-		const modelTextures = await minecraft.resolveTextureAssets(textureAssetPaths);
-		let webviewModelTextures: {[key: string]: string} = {};
-		for(let key of Object.keys(modelTextures)) {
-			const uri = this._panel.webview?.asWebviewUri(modelTextures[key]).toString();
-			if(uri) {
-				webviewModelTextures[key] = uri;
-			}
+	private async resolveAssets(assetPaths: string[], assetType: string, requestID: number) {
+		const response = {command: "resolvedAssets", assetType, requestID};
+
+		let resolvedAssets: {[assetPath: string]: vscode.Uri | undefined};
+		switch(assetType) {
+			case "texture":
+				resolvedAssets = await minecraft.resolveTextureAssets(assetPaths);
+				break;
+			default:
+				response["assets"] = null;
+				ModelViewerPanel.postMessage(response);
+				return;
 		}
 
-		ModelViewerPanel.postMessage({command: "resolvedTextures", value: webviewModelTextures});
+		let webviewAssets: {[key: string]: string | null} = {};
+		for(const assetPath in resolvedAssets) {
+			const assetUri = resolvedAssets[assetPath];
+			webviewAssets[assetPath] = assetUri != null ? this._panel.webview?.asWebviewUri(assetUri).toString() : null;
+		}
+
+		response["assets"] = webviewAssets;
+		ModelViewerPanel.postMessage(response);
 	}
 
 	public dispose() {
