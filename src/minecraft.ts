@@ -35,7 +35,7 @@ export async function resolveTextureAssets(assets: string[]) {
 }
 
 export async function resolveModelAssets(assets: string[]) {
-    return resolveAssets(assets, '.json', config.textureAssetsRoots);
+    return resolveAssets(assets, '.json', config.modelAssetsRoots);
 }
 
 export async function resolveAssets(assets: string[], fileExtension: string, assetRoots: vscode.Uri[]) {

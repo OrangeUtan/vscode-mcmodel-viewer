@@ -1,6 +1,7 @@
-import { MinecraftModel, MinecraftModelLoader, MinecraftModelMesh, MinecraftTexture, MinecraftTextureLoader } from '@oran9e/three-mcmodel';
+import { HierarchicalModelResolver, MinecraftModel, MinecraftModelLoader, MinecraftModelMesh, MinecraftTexture, MinecraftTextureLoader } from '@oran9e/three-mcmodel';
 import { AssetResolver, showError } from '../extensionApi';
 import { writable, get, readable } from 'svelte/store';
+import { MinecraftModelGeometry } from '@oran9e/three-mcmodel/dist/src/geometry';
 
 export const modelMesh = writable<MinecraftModelMesh |undefined>(undefined);
 export const textures = writable<{[assetPath: string]: MinecraftTexture}>({});
@@ -8,25 +9,46 @@ export const textures = writable<{[assetPath: string]: MinecraftTexture}>({});
 window.addEventListener('message', e => {
     switch(e.data.command) {
         case "loadModel":
-            (async () => loadModel(e.data.value))();
+            (async () => {
+                try {
+                    await loadModel(e.data.value);
+                } catch(e) {
+                    showError(e.message);
+                }
+            })();
             break;
     }
 });
 
 async function loadModel(modelUrl: string) {
-    let model: MinecraftModel;
-    try {
-        model = await new MinecraftModelLoader().load(modelUrl);
-    } catch(e) {
-        showError(`Loading model failed: ${e.message}`);
-        return;
-    }
-    modelMesh.set(new MinecraftModelMesh(model));
+    let model = await new MinecraftModelLoader().load(modelUrl);
 
-    if(model.textures) {
-        AssetResolver.resolveAssets(Object.values(model.textures), "texture")
-            .then((textureUrls) => loadTextures(textureUrls));
+    let ancestors: {[assetPath: string]: MinecraftModel} = {};
+    let current = model;
+    while(current.parent != null) {
+        const ancestorUrl = (await AssetResolver.resolveAssets([current.parent], "model"))[current.parent];
+        if(ancestorUrl === null) {
+            throw new Error("Couldn't resolve parent: " + current.parent);
+        }
+        let ancestor: MinecraftModel;
+        try {
+            ancestor = await new MinecraftModelLoader().load(ancestorUrl);
+        } catch(e) {
+            throw new Error(`Failed loading parent '${current.parent}': ${e.message}`);
+        }
+        ancestors[current.parent] = ancestor;
+        current = ancestor;
     }
+
+    const resolver = new HierarchicalModelResolver(model, ancestors);
+    const elements = resolver.elements ?? [];
+    const textures = resolver.textures;
+
+    const geometry = new MinecraftModelGeometry(elements, textures);
+    modelMesh.set(new MinecraftModelMesh(geometry, textures));
+
+    AssetResolver.resolveAssets(Object.values(textures), "texture")
+        .then((textureUrls) => loadTextures(textureUrls));
 }
 
 async function loadTextures(textureUrls: {[assetPath: string]: string | null}) {
@@ -48,6 +70,6 @@ async function loadTextures(textureUrls: {[assetPath: string]: string | null}) {
         }
     }
 
-    textures.set(loadedTextures);
     get(modelMesh)?.resolveTextures((assetPath) => loadedTextures[assetPath]);
+    textures.set(loadedTextures);
 }

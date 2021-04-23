@@ -20,11 +20,11 @@ export class AssetResolver {
         AssetResolver.assetRequests[requestID] = onResolved;
     }
 
-    static onResolvedAssets(data: any) {
-        const cb = this.assetRequests[data.requestID];
+    static onResolvedAssets(requestID: number, assets: any) {
+        const cb = this.assetRequests[requestID];
         if(cb != null) {
-            delete this.assetRequests[data.requestID];
-            cb(data.assets || []);
+            delete this.assetRequests[requestID];
+            cb(assets || []);
         }
     }
 }
@@ -32,7 +32,7 @@ export class AssetResolver {
 window.addEventListener('message', e => {
     switch(e.data.command) {
         case "resolvedAssets":
-            AssetResolver.onResolvedAssets(e.data);
+            AssetResolver.onResolvedAssets(e.data.requestID, e.data.assets);
             break;
     }
 });

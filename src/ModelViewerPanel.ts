@@ -108,6 +108,9 @@ export class ModelViewerPanel {
 			case "texture":
 				resolvedAssets = await minecraft.resolveTextureAssets(assetPaths);
 				break;
+			case "model":
+				resolvedAssets = await minecraft.resolveModelAssets(assetPaths);
+				break;
 			default:
 				response["assets"] = null;
 				ModelViewerPanel.postMessage(response);
