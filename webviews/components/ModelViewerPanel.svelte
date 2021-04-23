@@ -1,14 +1,12 @@
 <script lang="ts">
     import ModelCanvas from './ModelCanvas.svelte'
-    import { MinecraftModel, MinecraftModelLoader, MinecraftModelMesh, MinecraftTexture, MinecraftTextureLoader } from '@oran9e/three-mcmodel';
     import { RendererSettings } from '../data/config'
     import { onMount } from 'svelte';
     import { Animator } from '../utils/Animator';
-    import { AssetResolver, showError } from '../extensionApi';
+    import { modelMesh, textures } from '../data/model';
+    import { get } from 'svelte/store';
 
-    let modelCanvas: ModelCanvas
-    let modelMesh: MinecraftModelMesh | undefined = undefined
-    let textures: {[assetPath: string]: MinecraftTexture} = {}
+    let modelCanvas: ModelCanvas;
     let rendererSettings = new RendererSettings();
 
     let animator = new Animator();
@@ -21,58 +19,20 @@
 
     window.addEventListener('message', e => {
         switch(e.data.command) {
-            case "loadModel":
-                (async () => loadModel(e.data.value))();
-                break;
             case "updateRendererSettings":
                 updateRendererSettings(e.data.value)
                 break;
         }
     });
 
-    async function loadModel(modelUrl: string) {
-        let model: MinecraftModel;
-        try {
-            model = await new MinecraftModelLoader().load(modelUrl)
-        } catch(e) {
-            showError(`Loading model failed: ${e.message}`)
-            return;
-        }
-        modelMesh = new MinecraftModelMesh(model)
-
-        if(model.textures) {
-            AssetResolver.resolveAssets(Object.values(model.textures), "texture")
-                .then((textureUrls) => loadTextures(textureUrls))
-        }
-    }
-
-    async function loadTextures(textureUrls: {[assetPath: string]: string | null}) {
-        const textureLoader = new MinecraftTextureLoader();
-        const loadedTextures: {[assetPath: string]: MinecraftTexture} = {}
-
-        for(const assetPath in textureUrls) {
-            const url = textureUrls[assetPath]
-            if(url == null) {
-                showError(`Couldn't resolve texture: ${assetPath}`)
-                continue;
-            }
-
-            try {
-                loadedTextures[assetPath] = await textureLoader.load(url)
-            } catch(e) {
-                showError(`Failed loading texture: ${assetPath}. System path: ${url}`)
-                continue;
-            }
-        }
-
-        textures = loadedTextures
-        modelMesh?.resolveTextures((assetPath) =>  textures[assetPath])
+    textures.subscribe(() => {
+        const mesh = get(modelMesh);
 
         animator.stop();
-        if(modelMesh?.isAnimated()) {
-            animator.start((frame) => modelMesh?.setAnimationFrame(frame), 500, modelMesh?.getAnimationPeriod() ?? 1)
+        if(mesh?.isAnimated()) {
+            animator.start((frame) => mesh?.setAnimationFrame(frame), 500, mesh?.getAnimationPeriod() ?? 1)
         }
-    }
+    });
 
     function updateRendererSettings(settings: any) {
         rendererSettings = new RendererSettings(
@@ -98,5 +58,5 @@
 </style>
 
 <div id="container">
-    <ModelCanvas bind:this={modelCanvas} {modelMesh} settings={rendererSettings} />
+    <ModelCanvas bind:this={modelCanvas} modelMesh={$modelMesh} settings={rendererSettings} />
 </div>
