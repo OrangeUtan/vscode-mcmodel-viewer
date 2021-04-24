@@ -16,9 +16,9 @@ export async function activate(context: vscode.ExtensionContext) {
 	// Listen to configuration changes
 	context.subscriptions.push(
 		vscode.workspace.onDidChangeConfiguration(e => {
-			if(e.affectsConfiguration(config.RENDERER_SECTION)) {
+			if(e.affectsConfiguration(config.SECTION_RENDERER)) {
 				ModelViewerPanel.updateRendererSettings(config.getHelperConfiguration());
-			} else if(e.affectsConfiguration("mcmodel-viewer.assetsRoots")) {
+			} else if(e.affectsConfiguration(config.SECTION_ASSETS_ROOTS)) {
 				minecraft.updateAssetsRoots();
 			}
 		})
