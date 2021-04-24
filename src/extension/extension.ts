@@ -2,19 +2,25 @@ import * as vscode from 'vscode';
 import { ModelViewerPanel } from './ModelViewerPanel';
 import * as config from './config';
 import * as utils from './utils';
+import * as minecraft from './minecraft';
 
 let currentlyModel: vscode.Uri | undefined = undefined;
 
 export async function activate(context: vscode.ExtensionContext) {
+	minecraft.updateAssetsRoots();
+
 	context.subscriptions.push(
 		vscode.window.onDidChangeActiveTextEditor(onChangedActiveTextEditor)
 	);
 
 	// Listen to configuration changes
 	context.subscriptions.push(
-		...config.createConfigurationListeners(),
-		config.subscribeConfiguration(config.RENDERER_SECTION, () => {
-			ModelViewerPanel.updateRendererSettings(config.getHelperConfiguration());
+		vscode.workspace.onDidChangeConfiguration(e => {
+			if(e.affectsConfiguration(config.RENDERER_SECTION)) {
+				ModelViewerPanel.updateRendererSettings(config.getHelperConfiguration());
+			} else if(e.affectsConfiguration("mcmodel-viewer.assetsRoots")) {
+				minecraft.updateAssetsRoots();
+			}
 		})
 	);
 
@@ -69,5 +75,5 @@ function onChangedActiveTextEditor(editor?: vscode.TextEditor) {
 function isModelFile(editor: vscode.TextEditor) {
 	return editor
 		&& editor.document.languageId === "json"
-		 && config.modelAssetsRoots.some(root => utils.isParentDir(root.path, editor.document.uri.path));
+		 && minecraft.modelAssetsRoots.some(root => utils.isParentDir(root.path, editor.document.uri.path));
 }
