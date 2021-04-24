@@ -39,7 +39,7 @@ export class ModelViewerPanel {
 
 		let localResourceRoots = [
 			vscode.Uri.joinPath(extensionUri, "media"),
-			vscode.Uri.joinPath(extensionUri, "out/compiled")
+			vscode.Uri.joinPath(extensionUri, "dist/webviews")
 		];
 		vscode.workspace.workspaceFolders?.forEach(f => localResourceRoots.push(f.uri));
 		config.getAssetsRoots().forEach(f => localResourceRoots.push(f));
@@ -152,7 +152,7 @@ export class ModelViewerPanel {
 	}
 
     private _getHtmlForWebview(webview: vscode.Webview) {
-		const compiledDirUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "out", "compiled"));
+		const compiledDirUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "dist", "webviews"));
 		const scriptUri = vscode.Uri.joinPath(compiledDirUri, "MCModelViewer.js");
 		const bundleCSSUri = vscode.Uri.joinPath(compiledDirUri, "bundle.css");
 

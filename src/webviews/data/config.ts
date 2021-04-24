@@ -5,7 +5,7 @@ export enum AntiAliasing {
 }
 
 export class RendererSettings {
-	public anitAliasing: AntiAliasing
+	public anitAliasing: AntiAliasing;
 
 	constructor(
 		public showBoundingBox = true,

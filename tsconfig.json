@@ -11,9 +11,7 @@
 		"strict": true,
 		"noImplicitAny": false
 	},
-	"exclude": [
-		"node_modules",
-		".vscode-test",
-		"webviews"
+	"include": [
+		"src/extension"
 	]
 }

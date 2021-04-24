@@ -14,7 +14,7 @@
 		"onCommand:mcmodel-viewer.showInViewer",
 		"onCommand:mcmodel-viewer.refresh"
 	],
-	"main": "./dist/extension.js",
+	"main": "./dist/extension/extension.js",
 	"contributes": {
 		"commands": [
 			{

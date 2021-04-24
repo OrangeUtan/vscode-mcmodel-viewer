@@ -1,6 +1,6 @@
 import { HierarchicalModelResolver, MinecraftModel, MinecraftModelLoader, MinecraftModelMesh, MinecraftTexture, MinecraftTextureLoader } from '@oran9e/three-mcmodel';
 import { AssetResolver, showError } from '../extensionApi';
-import { writable, get, readable } from 'svelte/store';
+import { writable, get } from 'svelte/store';
 import { MinecraftModelGeometry } from '@oran9e/three-mcmodel/dist/src/geometry';
 
 export const modelMesh = writable<MinecraftModelMesh |undefined>(undefined);
