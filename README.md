@@ -9,4 +9,6 @@
 # Features
 ## Open models in viewer
 ## Animated textures
+Detects and plays animated textures
+![](https://raw.githubusercontent.com/oran9eutan/vscode-mcmodel-viewer/main/images/demo_animated_texture.gif)
 ## Automatically resolve assets

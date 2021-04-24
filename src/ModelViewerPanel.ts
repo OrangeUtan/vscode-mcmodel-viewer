@@ -87,7 +87,6 @@ export class ModelViewerPanel {
 			message => {
 				switch (message.command) {
 					case 'resolveAssets':
-						console.log("command resolveAssets");
 						this.resolveAssets(message.assetPaths, message.assetType, message.requestID);
 						break;
 					case 'error':
