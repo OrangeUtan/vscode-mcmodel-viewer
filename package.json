@@ -3,18 +3,26 @@
 	"displayName": "Minecraft Model Viewer",
 	"description": "A viewer for Java Minecraft models",
 	"version": "0.0.1",
-	"engines": {
-		"vscode": "^1.55.0"
+	"author": "Oran9eUtan",
+	"publisher": "Oran9eUtan",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/OrangeUtan/vscode-mcmodel-viewer"
 	},
+	"license": "MIT",
 	"categories": [
 		"Other"
 	],
+	"keywords": [
+		"minecraft",
+		"resourcepack"
+	],
+	"main": "./dist/extension/extension.js",
 	"activationEvents": [
 		"onLanguage:json",
 		"onCommand:mcmodel-viewer.showInViewer",
 		"onCommand:mcmodel-viewer.refresh"
 	],
-	"main": "./dist/extension/extension.js",
 	"contributes": {
 		"commands": [
 			{
@@ -87,7 +95,7 @@
 		"vscode:prepublish": "yarn run package",
 		"compile": "webpack",
 		"watch": "concurrently \"rollup -c -w\" \"webpack --watch\"",
-		"package": "webpack --mode production --devtool hidden-source-map",
+		"package": "concurrently \"webpack --mode production --devtool hidden-source-map\" \"rollup -c\"",
 		"pretest": "yarn run compile && yarn run lint",
 		"lint": "eslint src --ext ts"
 	},
@@ -128,5 +136,8 @@
 	},
 	"dependencies": {
 		"@oran9e/three-mcmodel": "^0.0.8"
+	},
+	"engines": {
+		"vscode": "^1.55.0"
 	}
 }
