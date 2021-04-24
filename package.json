@@ -19,14 +19,19 @@
 		"commands": [
 			{
 				"command": "mcmodel-viewer.showInViewer",
-				"category": "MCModel-Viewer",
+				"category": "MCModelViewer",
 				"title": "Open model in viewer",
 				"icon": "$(open-preview)"
 			},
 			{
 				"command": "mcmodel-viewer.refresh",
-				"category": "MCModel-Viewer",
+				"category": "MCModelViewer",
 				"title": "Refresh"
+			},
+			{
+				"command": "mcmodel-viewer.addAssetsRoot",
+				"category": "MCModelViewer",
+				"title": "Add assets root"
 			}
 		],
 		"menus": {

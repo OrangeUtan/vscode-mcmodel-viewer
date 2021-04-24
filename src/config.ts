@@ -12,6 +12,12 @@ export function getAssetsRoots(): vscode.Uri[] {
     return roots.map(r => vscode.Uri.file(r));
 }
 
+export function addAssetsRoot(assetsRoot: vscode.Uri) {
+	const roots = <Array<string>> vscode.workspace.getConfiguration("mcmodel-viewer").get("assetsRoots");
+	roots.push(assetsRoot.fsPath);
+	vscode.workspace.getConfiguration("mcmodel-viewer").update("assetsRoots", roots, vscode.ConfigurationTarget.Workspace);
+}
+
 export function getHelperConfiguration() {
 	return {
 		showBoundingBox: vscode.workspace.getConfiguration(RENDERER_SECTION).get("showBoundingBox"),

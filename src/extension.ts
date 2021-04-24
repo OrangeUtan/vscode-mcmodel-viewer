@@ -31,7 +31,8 @@ export async function activate(context: vscode.ExtensionContext) {
 			setTimeout(() => {
 				vscode.commands.executeCommand("workbench.action.webview.openDeveloperTools");
 			}, 500);
-		})
+		}),
+		vscode.commands.registerCommand('mcmodel-viewer.addAssetsRoot', () => addAssetsRoot())
 	);
 
 	context.subscriptions.push(
@@ -50,6 +51,14 @@ function loadModel(modelUri: vscode.Uri, context: vscode.ExtensionContext) {
 	ModelViewerPanel.createOrShow(context.extensionUri);
 	ModelViewerPanel.loadModel(modelUri);
 	ModelViewerPanel.updateRendererSettings(config.getHelperConfiguration());
+}
+
+async function addAssetsRoot() {
+	const selections = await vscode.window.showOpenDialog({canSelectFiles: false, canSelectFolders: true, title: "Select assets root", canSelectMany: false});
+	if(selections == null) {
+		return;
+	}
+	config.addAssetsRoot(selections[0]);
 }
 
 function onChangedActiveTextEditor(editor?: vscode.TextEditor) {
