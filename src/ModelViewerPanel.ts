@@ -42,7 +42,7 @@ export class ModelViewerPanel {
 			vscode.Uri.joinPath(extensionUri, "out/compiled")
 		];
 		vscode.workspace.workspaceFolders?.forEach(f => localResourceRoots.push(f.uri));
-		config.getAssetRoots().forEach(f => localResourceRoots.push(f));
+		config.getAssetsRoots().forEach(f => localResourceRoots.push(f));
 
 		// Otherwise, create a new panel.
 		const panel = vscode.window.createWebviewPanel(

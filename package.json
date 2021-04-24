@@ -41,7 +41,7 @@
 		"configuration": {
 			"title": "Minecraft Model Viewer",
 			"properties": {
-				"mcmodel-viewer.assetRoots": {
+				"mcmodel-viewer.assetsRoots": {
 					"description": "A list of directories that contain minecraft assets",
 					"type": "array",
 					"default": [],

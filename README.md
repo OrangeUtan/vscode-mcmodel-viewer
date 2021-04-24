@@ -36,7 +36,7 @@ E.g. a model references the texture `block/cake_bottom`:
 ```
  The extension will resolve this reference to the texture `assets_root/minecraft/textures/minecraft/block/cake_bottom.png`.
 ## External assets
-If your models use assets outside of your workspace, you can add the paths of asset roots on your system to the setting `Mcmodel-viewer:AssetRoots`. The extension will then include these directories when resolving assets.<br>
+If your models use assets outside of your workspace, you can add the paths of asset roots on your system to the setting `mcmodel-viewer.assetsRoots`. The extension will then include these directories when resolving assets.<br>
 
 E.g. this model references a arrow texture that does not exist in the workspace:
 ```json

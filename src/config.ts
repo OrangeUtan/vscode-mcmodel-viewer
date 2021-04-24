@@ -3,12 +3,12 @@ import * as minecraft from './minecraft';
 
 export const RENDERER_SECTION = "mcmodel-viewer.renderer";
 
-export let assetRoots: vscode.Uri[] = [];
+export let assetsRoots: vscode.Uri[] = [];
 export let textureAssetsRoots: Array<vscode.Uri> = [];
 export let modelAssetsRoots: Array<vscode.Uri> = [];
 
-export function getAssetRoots(): vscode.Uri[] {
-    const roots = <Array<string>> vscode.workspace.getConfiguration("mcmodel-viewer").get("assetRoots");
+export function getAssetsRoots(): vscode.Uri[] {
+    const roots = <Array<string>> vscode.workspace.getConfiguration("mcmodel-viewer").get("assetsRoots");
     return roots.map(r => vscode.Uri.file(r));
 }
 
@@ -23,12 +23,12 @@ export function getHelperConfiguration() {
 }
 
 export function createConfigurationListeners() {
-    onAssetRootsChanged();
+    onAssetsRootsChanged();
 
     return [
         vscode.workspace.onDidChangeConfiguration((e) => {
-			if(e.affectsConfiguration("mcmodel-viewer.assetRoots")) {
-				onAssetRootsChanged();
+			if(e.affectsConfiguration("mcmodel-viewer.assetsRoots")) {
+				onAssetsRootsChanged();
 			}
 		}),
         vscode.workspace.onDidChangeConfiguration((e) => {
@@ -55,9 +55,9 @@ function notifyConfigChanged(config: string) {
 	});
 }
 
-async function onAssetRootsChanged() {
-	assetRoots = (await minecraft.findAssetRootsInWorkspace()).concat(getAssetRoots());
-	textureAssetsRoots = await minecraft.findTextureAssetsRoots(assetRoots);
-	modelAssetsRoots = await minecraft.findModelAssetsRoots(assetRoots);
-	notifyConfigChanged("mcmodel-viewer.assetRoots");
+async function onAssetsRootsChanged() {
+	assetsRoots = (await minecraft.findAssetsRootsInWorkspace()).concat(getAssetsRoots());
+	textureAssetsRoots = await minecraft.findTextureAssetsRoots(assetsRoots);
+	modelAssetsRoots = await minecraft.findModelAssetsRoots(assetsRoots);
+	notifyConfigChanged("mcmodel-viewer.assetsRoots");
 }
