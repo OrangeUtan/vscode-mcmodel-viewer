@@ -38,7 +38,7 @@ export class ModelViewerPanel {
 		}
 
 		let localResourceRoots = [
-			vscode.Uri.joinPath(extensionUri, "media"),
+			vscode.Uri.joinPath(extensionUri, "res"),
 			vscode.Uri.joinPath(extensionUri, "dist/webviews")
 		];
 		vscode.workspace.workspaceFolders?.forEach(f => localResourceRoots.push(f.uri));
@@ -156,7 +156,7 @@ export class ModelViewerPanel {
 		const scriptUri = vscode.Uri.joinPath(compiledDirUri, "MCModelViewer.js");
 		const bundleCSSUri = vscode.Uri.joinPath(compiledDirUri, "bundle.css");
 
-		const mediaUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, 'media'));
+		const resourcesUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, 'res'));
 
         // Use a nonce to only allow specific scripts to be run
 		const nonce = getNonce();
@@ -167,10 +167,10 @@ export class ModelViewerPanel {
 					<meta charset="UTF-8">
 					<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src ${webview.cspSource}; img-src ${webview.cspSource} https: data:; script-src 'nonce-${nonce}'; connect-src data: vscode-webview-resource:">
 					<meta name="viewport" content="width=device-width, initial-scale=1.0">
-					<link href="${vscode.Uri.joinPath(mediaUri, 'reset.css')}" rel="stylesheet">
+					<link href="${vscode.Uri.joinPath(resourcesUri, 'reset.css')}" rel="stylesheet">
 					<link href="${bundleCSSUri}" rel="stylesheet">
 					<script nonce="${nonce}">
-						var MEDIA_ROOT = "${mediaUri.toString()}";
+						var RESOURCES_ROOT = "${resourcesUri.toString()}";
 					</script>
 				</head>
 				<body>

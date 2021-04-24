@@ -105,7 +105,7 @@
 
     function createCardinalDirectionLabels() {
         const loader = new THREE.FontLoader();
-        loader.load(MEDIA_ROOT + '/helvetiker_regular.typeface.json', function ( font ) {
+        loader.load(RESOURCES_ROOT + '/helvetiker_regular.typeface.json', function ( font ) {
             cardinalDirectionLabels = [
                 new Text2D("N", font, [-Math.PI / 2, 0, 0], [-2, 0, -26]),
                 new Text2D("E", font, [0, -Math.PI / 2, -Math.PI / 2], [26, 0, -2]),

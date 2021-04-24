@@ -1,4 +1,4 @@
-declare var MEDIA_ROOT: string;
+declare var RESOURCES_ROOT: string;
 
 declare class VSCodeAPI {
     postMessage(message: any): void
