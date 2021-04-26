@@ -1,19 +1,24 @@
 # Minecraft Model Viewer
 
 - Features
-    - [Open models in viewer](#Open-models-in-viewer)
+    - [Open model in 3D viewer](#Open-model-in-3D-viewer)
     - [Animated textures](#Animated-textures)
     - [Automatically resolves assets](#Automatically-resolves-assets)
     - [External assets](#External-assets)
     - [Changelog](https://github.com/Oran9eUtan/vscode-mcmodel-viewer/blob/main/CHANGELOG.md)
 
 # Features
-## Open models in viewer
-Open your models in an interactive 3D viewer
+## Open model in 3D viewer
+There are 2 ways to open your models in the 3D viewer:
+1. Json files that are recognized as model files (must be located in an assets root folder) will have a menu item that opens them in the viewer
+2. Executing the command `MCModelViewer: Open model in viewer` will open the model currently selected in the editor in the viewer
+
 ![](https://raw.githubusercontent.com/OrangeUtan/vscode-mcmodel-viewer/main/images/demo_open_in_viewer.gif)
+
 ## Animated textures
 Detects and plays animated textures
 ![](https://raw.githubusercontent.com/OrangeUtan/vscode-mcmodel-viewer/main/images/demo_animated_texture.gif)
+
 ## Automatically resolves assets
 Models reference textures and sometimes a parent model. The extension automatically searches for these assets in all asset roots contained in your workspace. <br>
 Asset roots are directories containing a `.mcassetsroot` file and follow the minecraft directory structure:
