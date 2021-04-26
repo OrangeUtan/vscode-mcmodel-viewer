@@ -21,7 +21,8 @@
 	"activationEvents": [
 		"onLanguage:json",
 		"onCommand:mcmodel-viewer.showInViewer",
-		"onCommand:mcmodel-viewer.refresh"
+		"onCommand:mcmodel-viewer.refresh",
+		"onCommand:mcmodel-viewer.addAssetsRoot"
 	],
 	"contributes": {
 		"commands": [
