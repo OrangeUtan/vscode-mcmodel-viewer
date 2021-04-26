@@ -70,7 +70,7 @@
     function initScene () {
         scene = new THREE.Scene()
         camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.01, 1000)
-        camera.position.set(0, 48, 48)
+        camera.position.set(0, 48, -48)
 
         renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, canvas })
         composer = new EffectComposer(renderer as THREE.WebGLRenderer)
