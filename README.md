@@ -47,11 +47,11 @@ E.g. this model references the Vanilla Minecraft texture for arrow entities:
 We could extracted all Vanilla Minecraft assets from the version JAR into the folder `%APPDATA%/.minecraft/versions/1.16.5/assets/` and then add it as an assets root. The texture will then be resolved to `%APPDATA%/.minecraft/versions/1.16.5/assets/minecraft/textures/entity/projectiles/arrow.png`
 
 # Assets roots
-Asset roots are directories that contain assets for minecraft. Resoourcepacks use them to overwrite or add custom assets. They containing a `.mcassetsroot` file and follow a certain directory structure:
+Asset roots are directories that contain assets for minecraft. Resourcepacks use them to overwrite or add custom assets. They containing a `.mcassetsroot` file and follow a certain directory structure:
 ```
 assets_root
 ├╴.mcassetsroot
-└╴<namespace2>
+└╴<namespace>
    ├╴models
    │ ├╴block
    │ └╴item
