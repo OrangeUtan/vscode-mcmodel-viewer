@@ -1,5 +1,13 @@
 Changelog
 
+## [1.0.1](https://github.com/OrangeUtan/vscode-mcmodel-viewer/compare/v1.0.0...v1.0.1) (2021-04-26)
+
+
+### Bug Fixes
+
+* Camera now initialized looking South ([fccdcbf](https://github.com/OrangeUtan/vscode-mcmodel-viewer/commit/fccdcbf5a6b77a77ca9ffa46837063908d67cd19))
+* Command 'mcmodel-viewer.addAssetsRoot' did not activate extension ([e2e9fee](https://github.com/OrangeUtan/vscode-mcmodel-viewer/commit/e2e9feee7f3a90b2f6feaeafd8ba3f147f73fee3))
+
 # 1.0.0 (2021-04-24)
 
 
