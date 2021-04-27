@@ -11,8 +11,10 @@
     import type { ElementMesh } from '@oran9e/three-mcmodel';
 
     export let elements: ElementMesh[];
-    export let settings: RendererSettings
-    const elementsGroup: THREE.Group = new THREE.Group();
+    export let settings: RendererSettings;
+    export let wireframe = true;
+    const elementsGroup = new THREE.Group();
+    const wireframeGroup = new THREE.Group();
 
     onMount(async () => {
         initScene()
@@ -23,6 +25,16 @@
     $: {
         elementsGroup.clear();
         elementsGroup.add(...elements)
+
+        wireframeGroup.clear();
+        wireframeGroup.add(
+            ...elements.map(e => new THREE.LineSegments(new THREE.WireframeGeometry(e.geometry), new THREE.LineBasicMaterial()))
+        )
+    }
+
+    $: {
+        elementsGroup.visible = !wireframe;
+        wireframeGroup.visible = wireframe;
     }
 
     // Update settings
@@ -79,6 +91,10 @@
         elementsGroup.translateX(-8);
         elementsGroup.translateZ(-8);
         scene.add(elementsGroup);
+
+        wireframeGroup.translateX(-8);
+        wireframeGroup.translateZ(-8);
+        scene.add(wireframeGroup);
 
         animate()
     }

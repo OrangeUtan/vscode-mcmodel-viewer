@@ -9,6 +9,7 @@ import { calculateCommonAnimationPeriod } from '@oran9e/three-mcmodel/dist/textu
 
     let modelCanvas: ModelCanvas;
     let rendererSettings = new RendererSettings();
+    let wireframe = false;
 
     let animator = new Animator();
 
@@ -23,6 +24,8 @@ import { calculateCommonAnimationPeriod } from '@oran9e/three-mcmodel/dist/textu
             case "updateRendererSettings":
                 updateRendererSettings(e.data.value)
                 break;
+            case "toggleWireframe":
+                wireframe = !wireframe;
         }
     });
 
@@ -59,5 +62,5 @@ import { calculateCommonAnimationPeriod } from '@oran9e/three-mcmodel/dist/textu
 </style>
 
 <div id="container">
-    <ModelCanvas bind:this={modelCanvas} elements={$elementMeshes} settings={rendererSettings} />
+    <ModelCanvas bind:this={modelCanvas} elements={$elementMeshes} settings={rendererSettings} {wireframe} />
 </div>

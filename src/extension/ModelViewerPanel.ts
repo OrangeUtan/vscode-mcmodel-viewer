@@ -71,6 +71,10 @@ export class ModelViewerPanel {
 		this.currentPanel?._panel.webview.postMessage(message);
 	}
 
+	public static toggleWireframe() {
+		this.postMessage({command: "toggleWireframe"});
+	}
+
     private constructor(panel: vscode.WebviewPanel, extensionUri: vscode.Uri) {
 		this._panel = panel;
 		this._extensionUri = extensionUri;
@@ -97,6 +101,10 @@ export class ModelViewerPanel {
 			null,
 			this._disposables
 		);
+
+		panel.onDidChangeViewState(e => {
+			vscode.commands.executeCommand("setContext", "mcmodel-viewer.viewerActive", e.webviewPanel.active);
+		}, null, this._disposables);
 	}
 
 	private async resolveAssets(assetPaths: string[], assetType: string, requestID: number) {

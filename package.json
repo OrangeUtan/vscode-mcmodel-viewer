@@ -22,7 +22,8 @@
 		"onLanguage:json",
 		"onCommand:mcmodel-viewer.showInViewer",
 		"onCommand:mcmodel-viewer.refresh",
-		"onCommand:mcmodel-viewer.addAssetsRoot"
+		"onCommand:mcmodel-viewer.addAssetsRoot",
+		"onCommand:mcmodel-viewer.toggleWireframe"
 	],
 	"contributes": {
 		"commands": [
@@ -41,6 +42,12 @@
 				"command": "mcmodel-viewer.addAssetsRoot",
 				"category": "MCModelViewer",
 				"title": "Add assets root"
+			},
+			{
+				"command": "mcmodel-viewer.toggleWireframe",
+				"category": "MCModelViewer",
+				"title": "Toggle Wireframe",
+				"icon": "res/icons/wireframe.svg"
 			}
 		],
 		"menus": {
@@ -48,6 +55,11 @@
 				{
 					"when": "resourceLangId == json && mcmodel-viewer.activeTextEditorIsModel",
 					"command": "mcmodel-viewer.showInViewer",
+					"group": "navigation"
+				},
+				{
+					"when": "mcmodel-viewer.viewerActive",
+					"command": "mcmodel-viewer.toggleWireframe",
 					"group": "navigation"
 				}
 			]
