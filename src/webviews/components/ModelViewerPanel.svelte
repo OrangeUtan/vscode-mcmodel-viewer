@@ -3,8 +3,9 @@
     import { RendererSettings } from '../data/config'
     import { onMount } from 'svelte';
     import { Animator } from '../utils/Animator';
-    import { modelMesh, textures } from '../data/model';
+    import { elementMeshes, textures } from '../data/model';
     import { get } from 'svelte/store';
+import { calculateCommonAnimationPeriod } from '@oran9e/three-mcmodel/dist/texture';
 
     let modelCanvas: ModelCanvas;
     let rendererSettings = new RendererSettings();
@@ -26,11 +27,11 @@
     });
 
     textures.subscribe(() => {
-        const mesh = get(modelMesh);
+        const _textures = Object.values(get(textures));
 
         animator.stop();
-        if(mesh?.isAnimated()) {
-            animator.start((frame) => mesh?.setAnimationFrame(frame), 500, mesh?.getAnimationPeriod() ?? 1)
+        if(_textures.some(t => t.isAnimated())) {
+            animator.start(frame => _textures.forEach(t => t.setAnimationFrame(frame)), 500, calculateCommonAnimationPeriod(_textures));
         }
     });
 
@@ -58,5 +59,5 @@
 </style>
 
 <div id="container">
-    <ModelCanvas bind:this={modelCanvas} modelMesh={$modelMesh} settings={rendererSettings} />
+    <ModelCanvas bind:this={modelCanvas} elements={$elementMeshes} settings={rendererSettings} />
 </div>

@@ -1,9 +1,10 @@
-import { HierarchicalModelResolver, MinecraftModel, MinecraftModelLoader, MinecraftModelMesh, MinecraftTexture, MinecraftTextureLoader } from '@oran9e/three-mcmodel';
+import { HierarchicalModelResolver, MinecraftModelLoader, MinecraftTexture, MinecraftTextureLoader, ElementMesh } from '@oran9e/three-mcmodel';
+import type { MinecraftModel } from '@oran9e/minecraft-model';
 import { AssetResolver, showError } from '../extensionApi';
 import { writable, get } from 'svelte/store';
-import { MinecraftModelGeometry } from '@oran9e/three-mcmodel/dist/src/geometry';
+import { ElementGeometry } from '@oran9e/three-mcmodel/dist/geometry';
 
-export const modelMesh = writable<MinecraftModelMesh |undefined>(undefined);
+export const elementMeshes = writable<ElementMesh[]>([]);
 export const textures = writable<{[assetPath: string]: MinecraftTexture}>({});
 
 window.addEventListener('message', e => {
@@ -41,11 +42,15 @@ async function loadModel(modelUrl: string) {
     }
 
     const resolver = new HierarchicalModelResolver(model, ancestors);
-    const elements = resolver.elements ?? [];
     const textures = resolver.textures;
 
-    const geometry = new MinecraftModelGeometry(elements, textures);
-    modelMesh.set(new MinecraftModelMesh(geometry, textures));
+    let elements = [];
+    for(const element of resolver.elements ?? []) {
+        const geometry = new ElementGeometry(element, textures);
+        const mesh = new ElementMesh(geometry, textures);
+        elements.push(mesh);
+    }
+    elementMeshes.set(elements);
 
     AssetResolver.resolveAssets(Object.values(textures), "texture")
         .then((textureUrls) => loadTextures(textureUrls));
@@ -70,6 +75,6 @@ async function loadTextures(textureUrls: {[assetPath: string]: string | null}) {
         }
     }
 
-    get(modelMesh)?.resolveTextures((assetPath) => loadedTextures[assetPath]);
+    get(elementMeshes)?.forEach(e => e.resolveTextures((assetPath) => loadedTextures[assetPath]));
     textures.set(loadedTextures);
 }

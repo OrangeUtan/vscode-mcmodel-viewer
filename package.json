@@ -136,7 +136,7 @@
 		"webpack-cli": "^4.6.0"
 	},
 	"dependencies": {
-		"@oran9e/three-mcmodel": "^0.0.8"
+		"@oran9e/three-mcmodel": "^1.2.0"
 	},
 	"engines": {
 		"vscode": "^1.55.0"

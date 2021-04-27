@@ -1,7 +1,6 @@
 <script lang="ts">
 	import * as THREE from 'three';
     import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
-    import type { MinecraftModelMesh } from '@oran9e/three-mcmodel';
     import { Text2D } from '../utils/Text2D'
     import { AntiAliasing, RendererSettings } from '../data/config'
     import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer';
@@ -9,10 +8,11 @@
     import { SSAARenderPass } from 'three/examples/jsm/postprocessing/SSAARenderPass';
     import type { Pass } from 'three/examples/jsm/postprocessing/Pass';
     import { onMount } from 'svelte';
+    import type { ElementMesh } from '@oran9e/three-mcmodel';
 
-    export let modelMesh: MinecraftModelMesh | undefined = undefined
-    let _modelMesh: MinecraftModelMesh | undefined = undefined
+    export let elements: ElementMesh[];
     export let settings: RendererSettings
+    const elementsGroup: THREE.Group = new THREE.Group();
 
     onMount(async () => {
         initScene()
@@ -21,13 +21,8 @@
 
     // Update model mesh
     $: {
-        if(_modelMesh) {
-            scene.remove(_modelMesh)
-        }
-        _modelMesh = modelMesh;
-        if(_modelMesh) {
-            scene.add(_modelMesh);
-        }
+        elementsGroup.clear();
+        elementsGroup.add(...elements)
     }
 
     // Update settings
@@ -80,6 +75,10 @@
         controls = new OrbitControls(camera, renderer.domElement)
         controls.enableKeys = false
         controls.screenSpacePanning = true
+
+        elementsGroup.translateX(-8);
+        elementsGroup.translateZ(-8);
+        scene.add(elementsGroup);
 
         animate()
     }
