@@ -6,12 +6,13 @@
     import { Animator } from '../utils/Animator';
     import { calculateCommonAnimationPeriod } from '@oran9e/three-mcmodel';
     import { get } from 'svelte/store';
-
-    let rendererSettings = new RendererSettings();
+    import ShadingControls from './ShadingControls.svelte';
+    import { ShadingMode } from '../data/shading';
 
     let canvas: ModelCanvas;
-    let wireframe = false;
+    let shadingMode = ShadingMode.Material;
 
+    let rendererSettings = new RendererSettings();
     let animator = new Animator();
 
     onMount(async () => {
@@ -38,8 +39,6 @@
             case "updateRendererSettings":
                 updateRendererSettings(e.data.value)
                 break;
-            case "toggleWireframe":
-                wireframe = !wireframe;
         }
     }
 
@@ -54,4 +53,5 @@
     }
 </script>
 
-<ModelCanvas bind:this={canvas} elements={$elementMeshes} settings={rendererSettings} {wireframe} />
+<ShadingControls {shadingMode} setShadingMode={(m) => shadingMode = m}/>
+<ModelCanvas bind:this={canvas} elements={$elementMeshes} settings={rendererSettings} {shadingMode} />

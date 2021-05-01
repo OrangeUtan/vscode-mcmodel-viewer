@@ -38,8 +38,7 @@ export async function activate(context: vscode.ExtensionContext) {
 				vscode.commands.executeCommand("workbench.action.webview.openDeveloperTools");
 			}, 500);
 		}),
-		vscode.commands.registerCommand('mcmodel-viewer.addAssetsRoot', () => addAssetsRoot()),
-		vscode.commands.registerCommand('mcmodel-viewer.toggleWireframe', () => ModelViewerPanel.toggleWireframe())
+		vscode.commands.registerCommand('mcmodel-viewer.addAssetsRoot', () => addAssetsRoot())
 	);
 
 	context.subscriptions.push(

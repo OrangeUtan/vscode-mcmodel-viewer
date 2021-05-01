@@ -71,10 +71,6 @@ export class ModelViewerPanel {
 		this.currentPanel?._panel.webview.postMessage(message);
 	}
 
-	public static toggleWireframe() {
-		this.postMessage({command: "toggleWireframe"});
-	}
-
     private constructor(panel: vscode.WebviewPanel, extensionUri: vscode.Uri) {
 		this._panel = panel;
 		this._extensionUri = extensionUri;

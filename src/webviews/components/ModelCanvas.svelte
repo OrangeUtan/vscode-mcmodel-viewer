@@ -9,10 +9,12 @@
     import type { Pass } from 'three/examples/jsm/postprocessing/Pass';
     import { onMount } from 'svelte';
     import type { ElementMesh } from '@oran9e/three-mcmodel';
+    import { ShadingMode } from '../data/shading';
 
     export let elements: ElementMesh[];
     export let settings: RendererSettings;
-    export let wireframe = true;
+    export let shadingMode: ShadingMode;
+
     const elementsGroup = new THREE.Group();
     const wireframeGroup = new THREE.Group();
 
@@ -38,8 +40,16 @@
     }
 
     $: {
-        elementsGroup.visible = !wireframe;
-        wireframeGroup.visible = wireframe;
+        elementsGroup.visible = false;
+        wireframeGroup.visible = false;
+
+        switch(shadingMode) {
+            case ShadingMode.Wireframe:
+                wireframeGroup.visible = true;
+                break;
+            case ShadingMode.Material:
+                elementsGroup.visible = true;
+        }
     }
 
     // Update settings
