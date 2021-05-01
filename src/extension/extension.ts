@@ -17,7 +17,7 @@ export async function activate(context: vscode.ExtensionContext) {
 	context.subscriptions.push(
 		vscode.workspace.onDidChangeConfiguration(e => {
 			if(e.affectsConfiguration(config.SECTION_OVERLAY)) {
-				ModelViewerPanel.updateOverlaySettings(config.getHelperConfiguration());
+				ModelViewerPanel.get()?.updateOverlaySettings(config.getHelperConfiguration());
 			} else if(e.affectsConfiguration(config.SECTION_ASSETS_ROOTS)) {
 				minecraft.updateAssetsRoots();
 			}
@@ -54,9 +54,9 @@ export function deactivate() {}
 
 function loadModel(modelUri: vscode.Uri, context: vscode.ExtensionContext) {
 	currentlyModel = modelUri;
-	ModelViewerPanel.createOrShow(context.extensionUri);
-	ModelViewerPanel.loadModel(modelUri);
-	ModelViewerPanel.updateOverlaySettings(config.getHelperConfiguration());
+	const viewer = ModelViewerPanel.createOrShow(context.extensionUri);
+	viewer.loadModel(modelUri);
+	viewer.updateOverlaySettings(config.getHelperConfiguration());
 }
 
 async function addAssetsRoot() {

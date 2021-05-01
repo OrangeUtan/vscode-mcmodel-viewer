@@ -6,35 +6,24 @@ import * as path from 'path';
 
 export class ModelViewerPanel {
 
-    public static currentPanel?: ModelViewerPanel;
-    public static readonly viewType = "mcmodel-viewer.viewer";
+	public static readonly viewType = "mcmodel-viewer.viewer";
 
+    private static _instance?: ModelViewerPanel;
     private readonly _panel: vscode.WebviewPanel;
 	private readonly _extensionUri: vscode.Uri;
 	private _disposables: vscode.Disposable[] = [];
 
-	public static loadModel(modelUri: vscode.Uri) {
-		if(this.currentPanel) {
-			this.currentPanel._panel.title = path.basename(modelUri.path.toString());
-			this.postMessage({command: "loadModel", value: this.webview?.asWebviewUri(modelUri).toString()});
-		}
-	};
-
-	public static updateOverlaySettings(cfg: any) {
-		ModelViewerPanel.postMessage({command: "updateOverlaySettings", value: cfg});
-	}
-
-	static get webview() {
-		return this.currentPanel?._panel.webview;
+	public static get() {
+		return ModelViewerPanel._instance;
 	}
 
     public static createOrShow(extensionUri: vscode.Uri) {
 		const column = vscode.ViewColumn.Beside;
 
 		// If we already have a panel, show it.
-		if (ModelViewerPanel.currentPanel) {
-			ModelViewerPanel.currentPanel._panel.reveal(column, true);
-			return;
+		if (ModelViewerPanel._instance) {
+			ModelViewerPanel._instance._panel.reveal(column, true);
+			return ModelViewerPanel._instance;
 		}
 
 		let localResourceRoots = [
@@ -55,23 +44,20 @@ export class ModelViewerPanel {
             }
 		);
 
-		ModelViewerPanel.currentPanel = new ModelViewerPanel(panel, extensionUri);
+		ModelViewerPanel._instance = new ModelViewerPanel(panel, extensionUri);
+		return ModelViewerPanel._instance;
 	}
 
     public static kill() {
-        ModelViewerPanel.currentPanel?.dispose();
-        ModelViewerPanel.currentPanel = undefined;
+        ModelViewerPanel._instance?.dispose();
+        ModelViewerPanel._instance = undefined;
     }
 
     public static revive(panel: vscode.WebviewPanel, extensionUri: vscode.Uri) {
-		ModelViewerPanel.currentPanel = new ModelViewerPanel(panel, extensionUri);
+		ModelViewerPanel._instance = new ModelViewerPanel(panel, extensionUri);
 	}
 
-	public static postMessage(message: any) {
-		this.currentPanel?._panel.webview.postMessage(message);
-	}
-
-    private constructor(panel: vscode.WebviewPanel, extensionUri: vscode.Uri) {
+    constructor(panel: vscode.WebviewPanel, extensionUri: vscode.Uri) {
 		this._panel = panel;
 		this._extensionUri = extensionUri;
 
@@ -103,6 +89,37 @@ export class ModelViewerPanel {
 		}, null, this._disposables);
 	}
 
+	get webview() {
+		return this._panel.webview;
+	}
+
+	postMessage(message: any) {
+		this._panel.webview.postMessage(message);
+	}
+
+	public loadModel(modelUri: vscode.Uri) {
+		this._panel.title = path.basename(modelUri.path.toString());
+		this.postMessage({command: "loadModel", value: this.webview.asWebviewUri(modelUri).toString()});
+	};
+
+	public updateOverlaySettings(cfg: any) {
+		this.postMessage({command: "updateOverlaySettings", value: cfg});
+	}
+
+	dispose() {
+		ModelViewerPanel._instance = undefined;
+
+		// Clean up our resources
+		this._panel.dispose();
+
+		while (this._disposables.length) {
+			const x = this._disposables.pop();
+			if (x) {
+				x.dispose();
+			}
+		}
+	}
+
 	private async resolveAssets(assetPaths: string[], assetType: string, requestID: number) {
 		const response = {command: "resolvedAssets", assetType, requestID};
 
@@ -116,7 +133,7 @@ export class ModelViewerPanel {
 				break;
 			default:
 				response["assets"] = null;
-				ModelViewerPanel.postMessage(response);
+				this.postMessage(response);
 				return;
 		}
 
@@ -127,21 +144,7 @@ export class ModelViewerPanel {
 		}
 
 		response["assets"] = webviewAssets;
-		ModelViewerPanel.postMessage(response);
-	}
-
-	public dispose() {
-		ModelViewerPanel.currentPanel = undefined;
-
-		// Clean up our resources
-		this._panel.dispose();
-
-		while (this._disposables.length) {
-			const x = this._disposables.pop();
-			if (x) {
-				x.dispose();
-			}
-		}
+		this.postMessage(response);
 	}
 
 	private _update() {
