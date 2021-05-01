@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-import { ModelViewerPanel } from './ModelViewerPanel';
+import { ModelViewerPanel } from './modelViewerPanel';
 import * as config from './config';
 import * as utils from './utils';
 import * as minecraft from './minecraft';
