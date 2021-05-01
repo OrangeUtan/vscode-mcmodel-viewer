@@ -20,8 +20,8 @@ export class ModelViewerPanel {
 		}
 	};
 
-	public static updateRendererSettings(cfg: any) {
-		ModelViewerPanel.postMessage({command: "updateRendererSettings", value: cfg});
+	public static updateOverlaySettings(cfg: any) {
+		ModelViewerPanel.postMessage({command: "updateOverlaySettings", value: cfg});
 	}
 
 	static get webview() {

@@ -1,7 +1,7 @@
 <script lang="ts">
     import ModelCanvas from './ModelCanvas.svelte';
     import { elementMeshes, textures } from '../data/model';
-    import { RendererSettings } from '../data/config'
+    import { OverlaySettings } from '../data/config'
     import { onMount } from 'svelte';
     import { Animator } from '../utils/Animator';
     import { calculateCommonAnimationPeriod } from '@oran9e/three-mcmodel';
@@ -13,7 +13,7 @@
     let showOverlays = true;
 
     let canvas: ModelCanvas;
-    let rendererSettings = new RendererSettings();
+    let overlaySettings = new OverlaySettings();
     let animator = new Animator();
 
     onMount(async () => {
@@ -37,14 +37,14 @@
 
     function handleMessage(e: MessageEvent) {
         switch(e.data.command) {
-            case "updateRendererSettings":
-                updateRendererSettings(e.data.value)
+            case "updateOverlaySettings":
+                updateOverlaySettings(e.data.value)
                 break;
         }
     }
 
-    function updateRendererSettings(settings: any) {
-        rendererSettings = new RendererSettings(
+    function updateOverlaySettings(settings: any) {
+        overlaySettings = new OverlaySettings(
             settings.showBoundingBox,
             settings.showCardinalDirectionLabels,
             settings.show3x3BlocksGrid,
@@ -55,4 +55,4 @@
 </script>
 
 <RendererControls {shadingMode} setShadingMode={m => shadingMode = m} {showOverlays} setShowOverlays={s => showOverlays = s}/>
-<ModelCanvas bind:this={canvas} elements={$elementMeshes} settings={rendererSettings} {shadingMode} {showOverlays}/>
+<ModelCanvas bind:this={canvas} elements={$elementMeshes} overlaySettings={overlaySettings} {shadingMode} {showOverlays}/>

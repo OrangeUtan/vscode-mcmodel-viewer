@@ -4,7 +4,7 @@ export enum AntiAliasing {
 	Off, SSAA
 }
 
-export class RendererSettings {
+export class OverlaySettings {
 	public anitAliasing: AntiAliasing;
 
 	constructor(
@@ -14,8 +14,8 @@ export class RendererSettings {
 		public showVoxelGrid = true,
 		anitAliasing = "Off",
 	) {
-		this.anitAliasing = AntiAliasing[anitAliasing as keyof typeof AntiAliasing]
+		this.anitAliasing = AntiAliasing[anitAliasing as keyof typeof AntiAliasing];
 	}
 }
 
-export const rendererSettingsStore = writable<RendererSettings>(new RendererSettings());
+export const overlaySettingsStore = writable<OverlaySettings>(new OverlaySettings());
