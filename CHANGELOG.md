@@ -1,5 +1,19 @@
 Changelog
 
+# [1.1.0](https://github.com/OrangeUtan/vscode-mcmodel-viewer/compare/v1.0.1...v1.1.0) (2021-05-01)
+
+
+### Bug Fixes
+
+* Resize listener was not unregistered ([c52134a](https://github.com/OrangeUtan/vscode-mcmodel-viewer/commit/c52134aedc58d65032e7660fe0ddd26a53ca480c))
+
+
+### Features
+
+* Added overlays toggle ([38e4b85](https://github.com/OrangeUtan/vscode-mcmodel-viewer/commit/38e4b85d51f40a07113a077ff3d787d7bade7c85))
+* Added shading controls ([9124a9a](https://github.com/OrangeUtan/vscode-mcmodel-viewer/commit/9124a9ad186a5e7f2b4932e81b046f053c047296))
+* Added wireframe mode ([24af27d](https://github.com/OrangeUtan/vscode-mcmodel-viewer/commit/24af27d6f75c042c3982deb220ce2b464c5470be))
+
 ## [1.0.1](https://github.com/OrangeUtan/vscode-mcmodel-viewer/compare/v1.0.0...v1.0.1) (2021-04-26)
 
 
