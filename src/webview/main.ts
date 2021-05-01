@@ -1,4 +1,4 @@
-import App from "../components/ModelViewer.svelte";
+import App from "./ModelViewer.svelte";
 
 const app = new App({
   target: document.body,

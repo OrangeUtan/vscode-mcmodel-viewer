@@ -1,12 +1,12 @@
 <script lang="ts">
     import ModelCanvas from './ModelCanvas.svelte';
-    import { elementMeshes, textures } from '../data/model';
-    import { OverlaySettings } from '../data/config'
+    import { elementMeshes, textures } from './data/model';
+    import { OverlaySettings } from './data/config'
     import { onMount } from 'svelte';
-    import { Animator } from '../utils/Animator';
+    import { Animator } from './utils/Animator';
     import { calculateCommonAnimationPeriod } from '@oran9e/three-mcmodel';
     import { get } from 'svelte/store';
-    import { ShadingMode } from '../data/shading';
+    import { ShadingMode } from './data/shading';
     import RendererControls from './RendererControls.svelte';
 
     let shadingMode = ShadingMode.Material;
