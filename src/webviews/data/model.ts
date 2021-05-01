@@ -24,23 +24,7 @@ window.addEventListener('message', e => {
 
 async function loadModel(modelUrl: string) {
     let modelJson = await new MinecraftModelJsonLoader().load(modelUrl);
-
-    let ancestors: {[assetPath: string]: MinecraftModelJson} = {};
-    let current = modelJson;
-    while(current.parent != null) {
-        const ancestorUrl = (await AssetResolver.resolveAssets([current.parent], "model"))[current.parent];
-        if(ancestorUrl === null) {
-            throw new Error("Couldn't resolve parent: " + current.parent);
-        }
-        let ancestor: MinecraftModelJson;
-        try {
-            ancestor = await new MinecraftModelJsonLoader().load(ancestorUrl);
-        } catch(e) {
-            throw new Error(`Failed loading parent '${current.parent}': ${e.message}`);
-        }
-        ancestors[current.parent] = ancestor;
-        current = ancestor;
-    }
+    const ancestors = await loadAncestors(modelJson);
 
     const model = MinecraftModel.fromJson(resolveModelJson(modelJson, ancestors));
 
@@ -55,6 +39,29 @@ async function loadModel(modelUrl: string) {
 
     AssetResolver.resolveAssets(Object.values(model.textures), "texture")
         .then((textureUrls) => loadTextures(textureUrls));
+}
+
+async function loadAncestors(root: MinecraftModelJson) {
+    let ancestors: {[assetPath: string]: MinecraftModelJson} = {};
+    let current = root;
+    while(current.parent != null) {
+        const url = (await AssetResolver.resolveAssets([current.parent], "model"))[current.parent];
+
+        if(url === null) {
+            throw new Error("Couldn't resolve parent: " + current.parent);
+        }
+
+        let ancestor: MinecraftModelJson;
+        try {
+            ancestor = await new MinecraftModelJsonLoader().load(url);
+        } catch(e) {
+            throw new Error(`Failed loading parent '${current.parent}': ${e.message}`);
+        }
+        ancestors[current.parent] = ancestor;
+        current = ancestor;
+    }
+
+    return ancestors;
 }
 
 async function loadTextures(textureUrls: {[assetPath: string]: string | null}) {
