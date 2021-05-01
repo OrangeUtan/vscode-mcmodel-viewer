@@ -61,27 +61,27 @@
 					"default": [],
 					"uniqueItems": true
 				},
-				"mcmodel-viewer.renderer.showBoundingBox": {
+				"mcmodel-viewer.overlay.showBoundingBox": {
 					"description": "Show bounding box",
 					"type": "boolean",
 					"default": true
 				},
-				"mcmodel-viewer.renderer.showCardinalDirectionLabels": {
+				"mcmodel-viewer.overlay.showCardinalDirectionLabels": {
 					"description": "Show labels for cardinal directions",
 					"type": "boolean",
 					"default": true
 				},
-				"mcmodel-viewer.renderer.show3x3BlocksGrid": {
+				"mcmodel-viewer.overlay.show3x3BlocksGrid": {
 					"description": "Show 3x3 Blocks Grid",
 					"type": "boolean",
 					"default": true
 				},
-				"mcmodel-viewer.renderer.showVoxelGrid": {
+				"mcmodel-viewer.overlay.showVoxelGrid": {
 					"description": "Show voxel grid",
 					"type": "boolean",
 					"default": true
 				},
-				"mcmodel-viewer.renderer.antiAliasing": {
+				"mcmodel-viewer.overlay.antiAliasing": {
 					"type": "string",
 					"enum": [
 						"Off",
