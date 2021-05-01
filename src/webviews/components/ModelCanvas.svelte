@@ -18,7 +18,12 @@
 
     onMount(async () => {
         initScene()
-        window.addEventListener('resize', () => resizeRendererToDisplaySize())
+        const resizeHandle = () => resizeRendererToDisplaySize();
+        window.addEventListener('resize', resizeHandle);
+
+        return () => {
+            window.removeEventListener('resize', resizeHandle);
+        }
     })
 
     // Update model mesh
