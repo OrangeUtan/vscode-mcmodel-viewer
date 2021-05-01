@@ -75,10 +75,9 @@
 
     // Update overlays
     $: if(scene != null) {
+        removeOverlays();
         if(showOverlays) {
             addOverlays();
-        } else {
-            removeOverlays();
         }
 
         if(antiAliasingPass) {
