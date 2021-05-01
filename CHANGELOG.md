@@ -1,5 +1,12 @@
 Changelog
 
+## [1.1.1](https://github.com/OrangeUtan/vscode-mcmodel-viewer/compare/v1.1.0...v1.1.1) (2021-05-01)
+
+
+### Bug Fixes
+
+* Tried to add elements if array had length 0 ([d6f3be8](https://github.com/OrangeUtan/vscode-mcmodel-viewer/commit/d6f3be8e59dc58f01f57096bbbd9ef948cebc70a))
+
 # [1.1.0](https://github.com/OrangeUtan/vscode-mcmodel-viewer/compare/v1.0.1...v1.1.0) (2021-05-01)
 
 
