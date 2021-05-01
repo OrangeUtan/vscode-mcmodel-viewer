@@ -11,16 +11,35 @@
     import type { ElementMesh } from '@oran9e/three-mcmodel';
     import { ShadingMode } from '../data/shading';
 
+    // Props
     export let elements: ElementMesh[];
     export let settings: RendererSettings;
     export let shadingMode: ShadingMode;
     export let showOverlays: boolean;
 
+    // Html elements
+    let canvas: HTMLCanvasElement;
+
+    // Scene components
+    let scene: THREE.Scene;
+    let camera: THREE.PerspectiveCamera;
+    let controls: OrbitControls;
+    let renderer: THREE.Renderer;
+    let composer: EffectComposer;
+    let antiAliasingPass: Pass | undefined;
     const elementsGroup = new THREE.Group();
     const wireframeGroup = new THREE.Group();
 
+    // Overlays
+    let voxelGrid: THREE.GridHelper | undefined;
+    let blockGrid: THREE.GridHelper | undefined;
+    let cardinalDirectionLabels: Text2D[] | undefined;
+    let boundingBox: THREE.LineSegments | undefined;
+
     onMount(async () => {
         initScene()
+        animate()
+
         const resizeHandle = () => resizeRendererToDisplaySize();
         window.addEventListener('resize', resizeHandle);
 
@@ -29,8 +48,8 @@
         }
     })
 
-    // Update model mesh
-    $: {
+    // Add meshes to groups
+    $: if(elements.length > 0) {
         elementsGroup.clear();
         elementsGroup.add(...elements)
 
@@ -40,6 +59,7 @@
         )
     }
 
+    // Set visibility of groups
     $: {
         elementsGroup.visible = false;
         wireframeGroup.visible = false;
@@ -55,16 +75,10 @@
 
     // Update overlays
     $: if(scene != null) {
-        scene.remove(boundingBox)
-        scene.remove(blockGrid)
-        scene.remove(voxelGrid)
-        scene.remove(...cardinalDirectionLabels)
-
         if(showOverlays) {
-            if(settings.showBoundingBox) {scene.add(boundingBox)}
-            if(settings.show3x3BlocksGrid) {scene.add(blockGrid)}
-            if(settings.showVoxelGrid) {scene.add(voxelGrid)}
-            if(settings.showCardinalDirectionLabels) {scene.add(...cardinalDirectionLabels)}
+            addOverlays();
+        } else {
+            removeOverlays();
         }
 
         if(antiAliasingPass) {
@@ -77,25 +91,6 @@
                 break
         }
     }
-
-    let canvas: HTMLCanvasElement;
-
-    let scene: THREE.Scene;
-    let camera: THREE.PerspectiveCamera;
-    let controls: OrbitControls;
-    let renderer: THREE.Renderer;
-    let composer: EffectComposer;
-    let antiAliasingPass: Pass | undefined;
-
-    // Helpers
-    const voxelGrid = new THREE.GridHelper(48, 48, 0x444444, 0x444444)
-    const blockGrid = new THREE.GridHelper(48, 3)
-    let cardinalDirectionLabels: Text2D[] = []
-    createCardinalDirectionLabels()
-    const boundingBox = new THREE.LineSegments(
-        new THREE.EdgesGeometry(new THREE.BoxGeometry(48, 48, 48)).translate(0, 8, 0),
-        new THREE.LineBasicMaterial({ color: 0x444444, linewidth: 3 })
-    )
 
     function initScene () {
         scene = new THREE.Scene()
@@ -118,8 +113,6 @@
         wireframeGroup.translateX(-8);
         wireframeGroup.translateZ(-8);
         scene.add(wireframeGroup);
-
-        animate()
     }
 
     function animate () {
@@ -141,16 +134,49 @@
         }
     }
 
-    function createCardinalDirectionLabels() {
+    async function createCardinalDirectionLabels() {
         const loader = new THREE.FontLoader();
-        loader.load(RESOURCES_ROOT + '/helvetiker_regular.typeface.json', function ( font ) {
-            cardinalDirectionLabels = [
-                new Text2D("N", font, [-Math.PI / 2, 0, 0], [-2, 0, -26]),
-                new Text2D("E", font, [0, -Math.PI / 2, -Math.PI / 2], [26, 0, -2]),
-                new Text2D("S", font, [-Math.PI / 2, Math.PI, 0], [2, 0, 26]),
-                new Text2D("W", font, [0, Math.PI / 2, Math.PI / 2], [-26, 0, 2]),
-            ]
-        })
+        const font = await loader.loadAsync(RESOURCES_ROOT + '/helvetiker_regular.typeface.json');
+
+        return [
+            new Text2D("N", font, [-Math.PI / 2, 0, 0], [-2, 0, -26]),
+            new Text2D("E", font, [0, -Math.PI / 2, -Math.PI / 2], [26, 0, -2]),
+            new Text2D("S", font, [-Math.PI / 2, Math.PI, 0], [2, 0, 26]),
+            new Text2D("W", font, [0, Math.PI / 2, Math.PI / 2], [-26, 0, 2]),
+        ]
+    }
+
+    function removeOverlays() {
+        if(boundingBox) scene.remove(boundingBox)
+        if(blockGrid) scene.remove(blockGrid)
+        if(voxelGrid) scene.remove(voxelGrid)
+        if(cardinalDirectionLabels != null) scene.remove(...cardinalDirectionLabels)
+    }
+
+    async function addOverlays() {
+        if(settings.showBoundingBox) {
+            if(!boundingBox) {
+                boundingBox = new THREE.LineSegments(
+                    new THREE.EdgesGeometry(new THREE.BoxGeometry(48, 48, 48)).translate(0, 8, 0),
+                    new THREE.LineBasicMaterial({ color: 0x444444, linewidth: 3 })
+                )
+            }
+            scene.add(boundingBox)
+        }
+        if(settings.showVoxelGrid) {
+            if(!voxelGrid) voxelGrid = new THREE.GridHelper(48, 48, 0x444444, 0x444444)
+            scene.add(voxelGrid)
+        }
+        if(settings.show3x3BlocksGrid) {
+            if(!blockGrid) blockGrid = new THREE.GridHelper(48, 3);
+            scene.add(blockGrid)
+        }
+        if(settings.showCardinalDirectionLabels) {
+            if(cardinalDirectionLabels == null) {
+                cardinalDirectionLabels = await createCardinalDirectionLabels();
+            }
+            scene.add(...cardinalDirectionLabels)
+        }
     }
 </script>
 
