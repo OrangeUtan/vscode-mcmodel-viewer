@@ -22,21 +22,9 @@ import { ShadingMode } from "../data/shading";
     .btn {
         border: 0.6px solid black;
         background-color: #5a5a5a;
-        padding: 1.5px;
+        padding: 2px;
         display: flex;
         align-content: center;
-
-        &.right {
-            border-top-right-radius: 4px;
-            border-bottom-right-radius: 4px;
-        }
-
-        &.left {
-            border-top-left-radius: 4px;
-            border-bottom-left-radius: 4px;
-            border-right: unset;
-            padding-right: 1px;
-        }
 
         .icon {
             height: 12px;
@@ -60,16 +48,30 @@ import { ShadingMode } from "../data/shading";
         }
     }
 
-    .group {
+    .btn-group {
         margin-left: 2px;
         display: flex;
         flex-direction: row;
+
+        .btn:not(:first-child) {
+            border-left: unset;
+        }
+
+        .btn:first-child.btn{
+            border-top-left-radius: 4px;
+            border-bottom-left-radius: 4px;
+        }
+
+        .btn:last-child {
+            border-top-right-radius: 4px;
+            border-bottom-right-radius: 4px;
+        }
     }
 </style>
 
 <div class="wrapper">
-    <div class="group">
-        <div title="Toggle Overlays" class="btn left right" class:selected={showOverlays} on:click={() => setShowOverlays(!showOverlays)}>
+    <div class="btn-group">
+        <div title="Toggle Overlays" class="btn right" class:selected={showOverlays} on:click={() => setShowOverlays(!showOverlays)}>
             <svg class="icon" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <line x1="4.5" x2="4.5" y2="14"/>
                 <line x1="9.5" x2="9.5" y2="14"/>
@@ -78,8 +80,8 @@ import { ShadingMode } from "../data/shading";
             </svg>
         </div>
     </div>
-    <div class="group">
-        <div title="Shading: Wireframe" class="btn left" class:selected={shadingMode === ShadingMode.Wireframe} on:click={() => setShadingMode(ShadingMode.Wireframe)}>
+    <div class="btn-group">
+        <div title="Shading: Wireframe" class="btn" class:selected={shadingMode === ShadingMode.Wireframe} on:click={() => setShadingMode(ShadingMode.Wireframe)}>
             <svg class="icon" viewBox="0 0 18 18" xmlns="http://www.w3.org/2000/svg">
                 <circle cx="9" cy="9" r="8.5" fill="transparent"/>
                 <path d="M17 6H1M1 12H17M5.5 1.5V16.5M12.5 16.5V1.5"/>
