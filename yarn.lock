@@ -305,17 +305,17 @@
   dependencies:
     "@octokit/openapi-types" "^6.1.1"
 
-"@oran9e/minecraft-model@^1.0.1":
-  version "1.0.2"
-  resolved "https://registry.yarnpkg.com/@oran9e/minecraft-model/-/minecraft-model-1.0.2.tgz#da75c6a0570b9b13ce0a22b42f494c52215a2027"
-  integrity sha512-ezOaXEGMxuBfE+Ki+YpixqvpY4cr12+pBVzbhLyuHE93rOFLI90xhSYd+tqMJEMY9t+dO0ta9YTIr+Ozqcjb/w==
+"@oran9e/minecraft-model@^1.3.0":
+  version "1.3.0"
+  resolved "https://registry.yarnpkg.com/@oran9e/minecraft-model/-/minecraft-model-1.3.0.tgz#4db20cf46a925fbafb78c5532508548092040891"
+  integrity sha512-zHgrTRoAjiPuExxNCkF+bHfsemNlDSprahcV8fJi0/AMho2XGUCl+XKdfXZKHnFGnky/U2pLQYJPfFuEw9FK7Q==
 
-"@oran9e/three-mcmodel@^1.2.0":
-  version "1.2.0"
-  resolved "https://registry.yarnpkg.com/@oran9e/three-mcmodel/-/three-mcmodel-1.2.0.tgz#8e8f187a05aa0c3c9937f6ee27d87449496a7516"
-  integrity sha512-QZ2Q61VqdPliJWzNjbMe+J5HzTshsG30VmVMstJpPK60ADV1AMpgDcryW7uxpbGDEYcJpVnP0XeVhQh2ru/w8A==
+"@oran9e/three-mcmodel@^1.3.2":
+  version "1.3.2"
+  resolved "https://registry.yarnpkg.com/@oran9e/three-mcmodel/-/three-mcmodel-1.3.2.tgz#bc247050d4ac86e657d1dc8cf45d3cd0273ea565"
+  integrity sha512-LfK75mdn1mHPwM/Norbqp0juTO0zRa4e2RYvCiIpfajWrWZBgvqBFQhsfK8RqhHYgJc0lZJqwOPZOUP+vg8aPQ==
   dependencies:
-    "@oran9e/minecraft-model" "^1.0.1"
+    "@oran9e/minecraft-model" "^1.3.0"
     three "^0.127.0"
 
 "@rollup/plugin-commonjs@^18.0.0":

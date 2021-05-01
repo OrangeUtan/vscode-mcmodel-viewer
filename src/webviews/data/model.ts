@@ -1,5 +1,6 @@
-import { HierarchicalModelResolver, MinecraftModelLoader, MinecraftTexture, MinecraftTextureLoader, ElementMesh } from '@oran9e/three-mcmodel';
-import type { MinecraftModel } from '@oran9e/minecraft-model';
+import { MinecraftTexture, MinecraftTextureLoader, ElementMesh, MinecraftModelJsonLoader } from '@oran9e/three-mcmodel';
+import { resolveModelJson, MinecraftModelJson } from '@oran9e/minecraft-model';
+import { MinecraftModel } from '@oran9e/minecraft-model';
 import { AssetResolver, showError } from '../extensionApi';
 import { writable, get } from 'svelte/store';
 import { ElementGeometry } from '@oran9e/three-mcmodel/dist/geometry';
@@ -22,18 +23,18 @@ window.addEventListener('message', e => {
 });
 
 async function loadModel(modelUrl: string) {
-    let model = await new MinecraftModelLoader().load(modelUrl);
+    let modelJson = await new MinecraftModelJsonLoader().load(modelUrl);
 
-    let ancestors: {[assetPath: string]: MinecraftModel} = {};
-    let current = model;
+    let ancestors: {[assetPath: string]: MinecraftModelJson} = {};
+    let current = modelJson;
     while(current.parent != null) {
         const ancestorUrl = (await AssetResolver.resolveAssets([current.parent], "model"))[current.parent];
         if(ancestorUrl === null) {
             throw new Error("Couldn't resolve parent: " + current.parent);
         }
-        let ancestor: MinecraftModel;
+        let ancestor: MinecraftModelJson;
         try {
-            ancestor = await new MinecraftModelLoader().load(ancestorUrl);
+            ancestor = await new MinecraftModelJsonLoader().load(ancestorUrl);
         } catch(e) {
             throw new Error(`Failed loading parent '${current.parent}': ${e.message}`);
         }
@@ -41,18 +42,18 @@ async function loadModel(modelUrl: string) {
         current = ancestor;
     }
 
-    const resolver = new HierarchicalModelResolver(model, ancestors);
-    const textures = resolver.textures;
+    const model = MinecraftModel.fromJson(resolveModelJson(modelJson, ancestors));
 
     let elements = [];
-    for(const element of resolver.elements ?? []) {
-        const geometry = new ElementGeometry(element, textures);
-        const mesh = new ElementMesh(geometry, textures);
+    for(const element of model.elements) {
+        const geometry = new ElementGeometry(element, model.textures);
+        const mesh = new ElementMesh(geometry, model.textures);
         elements.push(mesh);
     }
     elementMeshes.set(elements);
 
-    AssetResolver.resolveAssets(Object.values(textures), "texture")
+
+    AssetResolver.resolveAssets(Object.values(model.textures), "texture")
         .then((textureUrls) => loadTextures(textureUrls));
 }
 
