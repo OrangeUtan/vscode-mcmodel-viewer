@@ -6,12 +6,13 @@
     import { Animator } from '../utils/Animator';
     import { calculateCommonAnimationPeriod } from '@oran9e/three-mcmodel';
     import { get } from 'svelte/store';
-    import ShadingControls from './ShadingControls.svelte';
     import { ShadingMode } from '../data/shading';
+    import RendererControls from './RendererControls.svelte';
+
+    let shadingMode = ShadingMode.Material;
+    let showOverlays = true;
 
     let canvas: ModelCanvas;
-    let shadingMode = ShadingMode.Material;
-
     let rendererSettings = new RendererSettings();
     let animator = new Animator();
 
@@ -53,5 +54,5 @@
     }
 </script>
 
-<ShadingControls {shadingMode} setShadingMode={(m) => shadingMode = m}/>
-<ModelCanvas bind:this={canvas} elements={$elementMeshes} settings={rendererSettings} {shadingMode} />
+<RendererControls {shadingMode} setShadingMode={m => shadingMode = m} {showOverlays} setShowOverlays={s => showOverlays = s}/>
+<ModelCanvas bind:this={canvas} elements={$elementMeshes} settings={rendererSettings} {shadingMode} {showOverlays}/>

@@ -14,6 +14,7 @@
     export let elements: ElementMesh[];
     export let settings: RendererSettings;
     export let shadingMode: ShadingMode;
+    export let showOverlays: boolean;
 
     const elementsGroup = new THREE.Group();
     const wireframeGroup = new THREE.Group();
@@ -52,12 +53,19 @@
         }
     }
 
-    // Update settings
+    // Update overlays
     $: if(scene != null) {
-        settings.showBoundingBox ? scene.add(boundingBox) : scene.remove(boundingBox)
-        settings.show3x3BlocksGrid ? scene.add(blockGrid) : scene.remove(blockGrid)
-        settings.showVoxelGrid ? scene.add(voxelGrid) : scene.remove(voxelGrid)
-        settings.showCardinalDirectionLabels ? scene.add(...cardinalDirectionLabels) : scene.remove(...cardinalDirectionLabels)
+        scene.remove(boundingBox)
+        scene.remove(blockGrid)
+        scene.remove(voxelGrid)
+        scene.remove(...cardinalDirectionLabels)
+
+        if(showOverlays) {
+            if(settings.showBoundingBox) {scene.add(boundingBox)}
+            if(settings.show3x3BlocksGrid) {scene.add(blockGrid)}
+            if(settings.showVoxelGrid) {scene.add(voxelGrid)}
+            if(settings.showCardinalDirectionLabels) {scene.add(...cardinalDirectionLabels)}
+        }
 
         if(antiAliasingPass) {
             composer.removePass(antiAliasingPass)
