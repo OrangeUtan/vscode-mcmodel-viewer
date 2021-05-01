@@ -1,5 +1,12 @@
 Changelog
 
+## [1.1.2](https://github.com/OrangeUtan/vscode-mcmodel-viewer/compare/v1.1.1...v1.1.2) (2021-05-01)
+
+
+### Bug Fixes
+
+* Overlay settings changes did not update renderer ([9da1686](https://github.com/OrangeUtan/vscode-mcmodel-viewer/commit/9da1686ffef95686df695f788e47b7ef51475a62))
+
 ## [1.1.1](https://github.com/OrangeUtan/vscode-mcmodel-viewer/compare/v1.1.0...v1.1.1) (2021-05-01)
 
 
