@@ -1,5 +1,5 @@
 # Minecraft Model Viewer
-[![Visual Studio Marketplace Version](https://img.shields.io/visual-studio-marketplace/v/Oran9eutan.mcmodel-viewer?logo=visual-studio-code)](https://marketplace.visualstudio.com/items?itemName=mcbeet.vscode-beet)
+[![Visual Studio Marketplace Version](https://img.shields.io/visual-studio-marketplace/v/Oran9eutan.mcmodel-viewer?logo=visual-studio-code)](https://marketplace.visualstudio.com/items?itemName=Oran9eutan.mcmodel-viewer)
 [![GitHub](https://img.shields.io/github/license/mcbeet/vscode-beet)](https://raw.githubusercontent.com/mcbeet/vscode-beet/main/LICENSE)
 [![semantic-release](https://img.shields.io/badge/%20%20%F0%9F%93%A6%F0%9F%9A%80-semantic--release-e10079.svg)](https://github.com/semantic-release/semantic-release)
 
