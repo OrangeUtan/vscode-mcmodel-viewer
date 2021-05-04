@@ -1,3 +1,5 @@
+import type { ResolvedAssetsMsg } from "../extension/messages";
+
 export const vscode = acquireVsCodeApi();
 
 export function showError(text: string) {
@@ -29,10 +31,6 @@ export class AssetResolver {
     }
 }
 
-window.addEventListener('message', e => {
-    switch(e.data.command) {
-        case "resolvedAssets":
-            AssetResolver.onResolvedAssets(e.data.requestID, e.data.assets);
-            break;
-    }
-});
+export function onResolvedAssetsMsg(msg: ResolvedAssetsMsg) {
+    AssetResolver.onResolvedAssets(msg.requestId, msg.assets);
+}

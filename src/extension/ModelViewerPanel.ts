@@ -2,7 +2,7 @@ import * as vscode from 'vscode';
 import * as config from './config';
 import * as minecraft from './minecraft';
 import * as path from 'path';
-
+import { ExtensionMessage, ExtensionMessageType } from './messages';
 
 export class ModelViewerPanel {
 
@@ -93,17 +93,17 @@ export class ModelViewerPanel {
 		return this._panel.webview;
 	}
 
-	postMessage(message: any) {
-		this._panel.webview.postMessage(message);
+	postMessage(msg: ExtensionMessage) {
+		this._panel.webview.postMessage(msg);
 	}
 
 	public loadModel(modelUri: vscode.Uri) {
 		this._panel.title = path.basename(modelUri.path.toString());
-		this.postMessage({command: "loadModel", value: this.webview.asWebviewUri(modelUri).toString()});
+		this.postMessage({command: ExtensionMessageType.LoadModel, modelUri: this.webview.asWebviewUri(modelUri).toString()});
 	};
 
 	public updateOverlaySettings(cfg: any) {
-		this.postMessage({command: "updateOverlaySettings", value: cfg});
+		this.postMessage({command: ExtensionMessageType.UpdateOverlaySettings, settings: cfg});
 	}
 
 	dispose() {
@@ -120,8 +120,8 @@ export class ModelViewerPanel {
 		}
 	}
 
-	private async resolveAssets(assetPaths: string[], assetType: string, requestID: number) {
-		const response = {command: "resolvedAssets", assetType, requestID};
+	private async resolveAssets(assetPaths: string[], assetType: string, requestId: number) {
+		const response: ExtensionMessage = {command: ExtensionMessageType.ResolvedAssets, assetType, requestId, assets: null};
 
 		let resolvedAssets: {[assetPath: string]: vscode.Uri | undefined};
 		switch(assetType) {
@@ -132,7 +132,6 @@ export class ModelViewerPanel {
 				resolvedAssets = await minecraft.resolveModelAssets(assetPaths);
 				break;
 			default:
-				response["assets"] = null;
 				this.postMessage(response);
 				return;
 		}

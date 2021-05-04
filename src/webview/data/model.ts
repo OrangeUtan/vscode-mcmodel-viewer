@@ -1,26 +1,21 @@
 import { MinecraftTexture, MinecraftTextureLoader, ElementMesh, MinecraftModelJsonLoader } from '@oran9e/three-mcmodel';
 import { resolveModelJson, MinecraftModelJson } from '@oran9e/minecraft-model';
 import { MinecraftModel } from '@oran9e/minecraft-model';
-import { AssetResolver, showError } from '../extensionApi';
+import { AssetResolver, showError } from '../extension';
 import { writable, get } from 'svelte/store';
 import { ElementGeometry } from '@oran9e/three-mcmodel/dist/geometry';
+import type { LoadModelMsg } from '../../extension/messages';
 
 export const elementMeshes = writable<ElementMesh[]>([]);
 export const textures = writable<{[assetPath: string]: MinecraftTexture}>({});
 
-window.addEventListener('message', e => {
-    switch(e.data.command) {
-        case "loadModel":
-            (async () => {
-                try {
-                    await loadModel(e.data.value);
-                } catch(e) {
-                    showError(e.message);
-                }
-            })();
-            break;
+export async function onLoadModelMsg(msg: LoadModelMsg) {
+    try {
+        await loadModel(msg.modelUri);
+    } catch(e) {
+        showError(e.message);
     }
-});
+}
 
 async function loadModel(modelUrl: string) {
     let modelJson = await new MinecraftModelJsonLoader().load(modelUrl);

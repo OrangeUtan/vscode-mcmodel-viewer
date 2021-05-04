@@ -1,7 +1,33 @@
 <script lang="ts">
+    import { onMount } from 'svelte';
+    import type { ExtensionMessage } from '../extension/messages';
+    import { ExtensionMessageType } from '../extension/messages';
+    import {onLoadModelMsg} from './data/model';
+    import {onResolvedAssetsMsg} from './extension';
+
     import RendererPanel from './RendererPanel.svelte';
 
     let rendererPanel: RendererPanel;
+
+    onMount(() => {
+        const handleMessage = (e: MessageEvent) => handleExtensionMessage(e.data);
+        window.addEventListener('message', handleMessage);
+
+        return () => {
+            window.removeEventListener('message', handleMessage);
+        }
+    });
+
+    function handleExtensionMessage(msg: ExtensionMessage) {
+        switch(msg.command) {
+            case ExtensionMessageType.LoadModel:
+                onLoadModelMsg(msg);
+                break;
+            case ExtensionMessageType.ResolvedAssets:
+                onResolvedAssetsMsg(msg);
+                break;
+        }
+    }
 </script>
 
 <style lang="scss">
