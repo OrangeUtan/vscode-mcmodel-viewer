@@ -1,21 +1,28 @@
 import { writable } from 'svelte/store';
+import { ExtensionMessageType, UpdateOverlaySettingsMsg } from '../../extension/messages';
+import * as extension from '../extension';
 
 export enum AntiAliasing {
-	Off, SSAA
+	Off = "Off",
+	SSAA = "SSAA"
 }
 
-export class OverlaySettings {
-	public anitAliasing: AntiAliasing;
-
-	constructor(
-		public showBoundingBox = true,
-		public showCardinalDirectionLabels = true,
-		public show3x3BlocksGrid = true,
-		public showVoxelGrid = true,
-		anitAliasing = "Off",
-	) {
-		this.anitAliasing = AntiAliasing[anitAliasing as keyof typeof AntiAliasing];
-	}
+export interface OverlaySettings {
+	showBoundingBox: boolean
+	showCardinalDirectionLabels: boolean
+	show3x3BlocksGrid: boolean
+	showVoxelGrid: boolean
+	antiAliasing: keyof typeof AntiAliasing
 }
 
-export const overlaySettingsStore = writable<OverlaySettings>(new OverlaySettings());
+export const overlaySettings = writable<OverlaySettings>({
+	showBoundingBox: true,
+	showCardinalDirectionLabels: true,
+	show3x3BlocksGrid: true,
+	showVoxelGrid: true,
+	antiAliasing: 'SSAA'
+});
+
+extension.addExtensionMessageListener<UpdateOverlaySettingsMsg>(ExtensionMessageType.UpdateOverlaySettings, (msg) => {
+	overlaySettings.set(msg.settings);
+});

@@ -2,7 +2,8 @@
 	import * as THREE from 'three';
     import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
     import { Text2D } from './utils/Text2D'
-    import { AntiAliasing, OverlaySettings } from './data/config'
+    import { AntiAliasing } from './data/config'
+    import type { OverlaySettings } from './data/config'
     import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer';
     import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js';
     import { SSAARenderPass } from 'three/examples/jsm/postprocessing/SSAARenderPass';
@@ -77,13 +78,13 @@
     $: if(scene != null) {
         removeOverlays();
         if(showOverlays) {
-            addOverlays();
+            addOverlays(overlaySettings);
         }
 
         if(antiAliasingPass) {
             composer.removePass(antiAliasingPass)
         }
-        switch(overlaySettings.anitAliasing) {
+        switch(overlaySettings.antiAliasing) {
             case AntiAliasing.SSAA:
                 antiAliasingPass = new SSAARenderPass(scene, camera, 0, 0);
                 composer.addPass(antiAliasingPass);
@@ -152,8 +153,8 @@
         if(cardinalDirectionLabels != null) scene.remove(...cardinalDirectionLabels)
     }
 
-    async function addOverlays() {
-        if(overlaySettings.showBoundingBox) {
+    async function addOverlays(settings: OverlaySettings) {
+        if(settings.showBoundingBox) {
             if(!boundingBox) {
                 boundingBox = new THREE.LineSegments(
                     new THREE.EdgesGeometry(new THREE.BoxGeometry(48, 48, 48)).translate(0, 8, 0),
@@ -162,15 +163,15 @@
             }
             scene.add(boundingBox)
         }
-        if(overlaySettings.showVoxelGrid) {
+        if(settings.showVoxelGrid) {
             if(!voxelGrid) voxelGrid = new THREE.GridHelper(48, 48, 0x444444, 0x444444)
             scene.add(voxelGrid)
         }
-        if(overlaySettings.show3x3BlocksGrid) {
+        if(settings.show3x3BlocksGrid) {
             if(!blockGrid) blockGrid = new THREE.GridHelper(48, 3);
             scene.add(blockGrid)
         }
-        if(overlaySettings.showCardinalDirectionLabels) {
+        if(settings.showCardinalDirectionLabels) {
             if(cardinalDirectionLabels == null) {
                 cardinalDirectionLabels = await createCardinalDirectionLabels();
             }

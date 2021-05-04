@@ -1,21 +1,22 @@
 import { MinecraftTexture, MinecraftTextureLoader, ElementMesh, MinecraftModelJsonLoader } from '@oran9e/three-mcmodel';
 import { resolveModelJson, MinecraftModelJson } from '@oran9e/minecraft-model';
 import { MinecraftModel } from '@oran9e/minecraft-model';
-import { AssetResolver, showError } from '../extension';
+import { AssetResolver } from '../extension';
+import * as extension from '../extension';
 import { writable, get } from 'svelte/store';
 import { ElementGeometry } from '@oran9e/three-mcmodel/dist/geometry';
-import type { LoadModelMsg } from '../../extension/messages';
+import { ExtensionMessageType, LoadModelMsg } from '../../extension/messages';
 
 export const elementMeshes = writable<ElementMesh[]>([]);
 export const textures = writable<{[assetPath: string]: MinecraftTexture}>({});
 
-export async function onLoadModelMsg(msg: LoadModelMsg) {
+extension.addExtensionMessageListener<LoadModelMsg>(ExtensionMessageType.LoadModel, async (msg) => {
     try {
         await loadModel(msg.modelUri);
     } catch(e) {
-        showError(e.message);
+        extension.showError(e.message);
     }
-}
+});
 
 async function loadModel(modelUrl: string) {
     let modelJson = await new MinecraftModelJsonLoader().load(modelUrl);
@@ -66,14 +67,14 @@ async function loadTextures(textureUrls: {[assetPath: string]: string | null}) {
     for(const assetPath in textureUrls) {
         const url = textureUrls[assetPath];
         if(url === null) {
-            showError(`Couldn't resolve texture: ${assetPath}`);
+            extension.showError(`Couldn't resolve texture: ${assetPath}`);
             continue;
         }
 
         try {
             loadedTextures[assetPath] = await textureLoader.load(url);
         } catch(e) {
-            showError(`Failed loading texture: ${assetPath}. System path: ${url}`);
+            extension.showError(`Failed loading texture: ${assetPath}. System path: ${url}`);
             continue;
         }
     }

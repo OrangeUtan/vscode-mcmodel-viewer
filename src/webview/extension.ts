@@ -1,4 +1,5 @@
-import type { ResolvedAssetsMsg } from "../extension/messages";
+import type { ExtensionMessage } from "../extension/messages";
+import { ExtensionMessageType } from "../extension/messages";
 import { ViewerMessageType } from './messages';
 import type { ViewerMessage } from './messages';
 
@@ -33,6 +34,35 @@ export class AssetResolver {
     }
 }
 
-export function onResolvedAssetsMsg(msg: ResolvedAssetsMsg) {
-    AssetResolver.onResolvedAssets(msg.requestId, msg.assets);
+/*
+    Listen to Extension messages
+*/
+
+export type ExtensionMessageListener<Message extends ExtensionMessage> = (msg: Message) => void;
+const extensionMessageListeners: {[messageType: string]: ExtensionMessageListener<ExtensionMessage>[]} = {};
+
+export function addExtensionMessageListener<Message extends ExtensionMessage>(messageType: ExtensionMessageType, listener: ExtensionMessageListener<Message>) {
+    const listeners = extensionMessageListeners[messageType] ?? [];
+    listeners.push(listener as ExtensionMessageListener<ExtensionMessage>);
+    extensionMessageListeners[messageType] = listeners;
+}
+
+export function removeExtensionMessageListener(messageType: ExtensionMessageType, listener: ExtensionMessageListener<ExtensionMessage>) {
+    let listeners = extensionMessageListeners[messageType] ?? [];
+    listeners = listeners.filter(l => l !== listener);
+    extensionMessageListeners[messageType] = listeners;
+}
+
+export function onExtensionMessage(msg: ExtensionMessage) {
+    notifyExtensionMessageListeners(msg.command, msg);
+
+    switch(msg.command) {
+        case ExtensionMessageType.ResolvedAssets:
+            AssetResolver.onResolvedAssets(msg.requestId, msg.assets);
+            break;
+    }
+}
+
+function notifyExtensionMessageListeners(messageType: ExtensionMessageType, msg: ExtensionMessage) {
+    extensionMessageListeners[messageType]?.forEach(l => l(msg));
 }
