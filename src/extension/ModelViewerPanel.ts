@@ -3,6 +3,7 @@ import * as config from './config';
 import * as minecraft from './minecraft';
 import * as path from 'path';
 import { ExtensionMessage, ExtensionMessageType } from './messages';
+import { ViewerMessage, ViewerMessageType } from '../webview/messages';
 
 export class ModelViewerPanel {
 
@@ -69,14 +70,14 @@ export class ModelViewerPanel {
 		this._panel.onDidDispose(() => this.dispose(), null, this._disposables);
 
 		// Handle messages from the webview
-		this._panel.webview.onDidReceiveMessage(
-			message => {
-				switch (message.command) {
-					case 'resolveAssets':
-						this.resolveAssets(message.assetPaths, message.assetType, message.requestID);
+		this._panel.webview.onDidReceiveMessage(message => {
+			const msg = message as ViewerMessage;
+				switch (msg.command) {
+					case ViewerMessageType.ResolveAssets:
+						this.resolveAssets(msg.assetPaths, msg.assetType, msg.requestId);
 						break;
-					case 'error':
-						vscode.window.showErrorMessage(message.text);
+					case ViewerMessageType.Error:
+						vscode.window.showErrorMessage(msg.text);
 						break;
 				}
 			},

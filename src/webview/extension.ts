@@ -1,9 +1,11 @@
 import type { ResolvedAssetsMsg } from "../extension/messages";
+import { ViewerMessageType } from './messages';
+import type { ViewerMessage } from './messages';
 
 export const vscode = acquireVsCodeApi();
 
 export function showError(text: string) {
-    vscode.postMessage({command: 'error', text});
+    vscode.postMessage({command: ViewerMessageType.Error, text} as ViewerMessage);
 }
 
 type OnResolve = (assets: {[assetPath: string]: string | null}) => void;
@@ -17,9 +19,9 @@ export class AssetResolver {
     }
 
     private static _resolveAsset(assetPaths: string[], assetType: string, onResolved: OnResolve) {
-        const requestID = this.currentRequestID++;
-        vscode.postMessage({command: "resolveAssets", assetPaths, assetType, requestID});
-        AssetResolver.assetRequests[requestID] = onResolved;
+        const requestId = this.currentRequestID++;
+        vscode.postMessage({command: ViewerMessageType.ResolveAssets, assetPaths, assetType, requestId} as ViewerMessage);
+        AssetResolver.assetRequests[requestId] = onResolved;
     }
 
     static onResolvedAssets(requestID: number, assets: any) {
