@@ -1,7 +1,6 @@
 <script lang="ts">
     import { onMount } from 'svelte';
     import { onExtensionMessage } from './extension';
-
     import RendererPanel from './RendererPanel.svelte';
 
     let rendererPanel: RendererPanel;
@@ -17,9 +16,8 @@
 </script>
 
 <style lang="scss">
-    :global(body) {
-        height: 100vh;
-        width: 100vw;
+    :global {
+        @import './styles/global.scss';
     }
 
     #container {
