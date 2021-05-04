@@ -1,16 +1,16 @@
 <script lang="ts">
 	import * as THREE from 'three';
     import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
-    import { Text2D } from './utils/Text2D'
-    import { AntiAliasing } from './data/config'
-    import type { OverlaySettings } from './data/config'
+    import { Text2D } from '../utils/Text2D'
+    import { AntiAliasing } from '../data/config'
+    import type { OverlaySettings } from '../data/config'
     import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer';
     import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js';
     import { SSAARenderPass } from 'three/examples/jsm/postprocessing/SSAARenderPass';
     import type { Pass } from 'three/examples/jsm/postprocessing/Pass';
     import { onMount } from 'svelte';
     import type { ElementMesh } from '@oran9e/three-mcmodel';
-    import { ShadingMode } from './data/shading';
+    import { ShadingMode } from '../data/shading';
 
     // Props
     export let elements: ElementMesh[];

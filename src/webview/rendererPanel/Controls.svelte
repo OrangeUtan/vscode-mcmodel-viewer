@@ -1,5 +1,5 @@
 <script lang="ts">
-import { ShadingMode } from "./data/shading";
+import { ShadingMode } from "../data/shading";
     export let shadingMode: ShadingMode;
     export let setShadingMode: (mode: ShadingMode) => void;
     export let showOverlays: boolean;

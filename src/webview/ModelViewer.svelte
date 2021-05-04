@@ -1,7 +1,7 @@
 <script lang="ts">
     import { onMount } from 'svelte';
     import { onExtensionMessage } from './extension';
-    import RendererPanel from './RendererPanel.svelte';
+    import RendererPanel from './rendererPanel/Panel.svelte';
 
     let rendererPanel: RendererPanel;
 
