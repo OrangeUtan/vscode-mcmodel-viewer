@@ -10,6 +10,7 @@
     const elementsGroup = new THREE.Group();
     const wireframeGroup = new THREE.Group();
 
+    // Add model to container
     $: if (container != null) {
         elementsGroup.translateX(-8);
         elementsGroup.translateZ(-8);
@@ -20,7 +21,7 @@
         container.add(wireframeGroup);
     }
 
-    // Add meshes to groups
+    // Update model meshes
     $: if(elements.length > 0) {
         elementsGroup.clear();
         elementsGroup.add(...elements)
@@ -31,7 +32,7 @@
         )
     }
 
-    // Set visibility of groups
+    // Set shading mode
     $: {
         elementsGroup.visible = false;
         wireframeGroup.visible = false;
