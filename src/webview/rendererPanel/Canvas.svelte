@@ -8,12 +8,12 @@
     import { SSAARenderPass } from 'three/examples/jsm/postprocessing/SSAARenderPass';
     import type { Pass } from 'three/examples/jsm/postprocessing/Pass';
     import { onMount } from 'svelte';
-    import type { ElementMesh } from '@oran9e/three-mcmodel';
-    import { ShadingMode } from '../data/shading';
     import Overlays from './Overlays.svelte';
+    import Model from './Model.svelte';
+    import { elementMeshes } from '../data/model';
+    import type { ShadingMode } from '../data/shading';
 
     // Props
-    export let elements: ElementMesh[];
     export let overlaySettings: OverlaySettings;
     export let shadingMode: ShadingMode;
     export let showOverlays: boolean;
@@ -28,8 +28,6 @@
     let renderer: THREE.Renderer;
     let composer: EffectComposer;
     let antiAliasingPass: Pass | undefined;
-    const elementsGroup = new THREE.Group();
-    const wireframeGroup = new THREE.Group();
 
     onMount(async () => {
         initScene()
@@ -42,31 +40,6 @@
             window.removeEventListener('resize', resizeHandle);
         }
     })
-
-    // Add meshes to groups
-    $: if(elements.length > 0) {
-        elementsGroup.clear();
-        elementsGroup.add(...elements)
-
-        wireframeGroup.clear();
-        wireframeGroup.add(
-            ...elements.map(e => new THREE.LineSegments(new THREE.WireframeGeometry(e.geometry), new THREE.LineBasicMaterial()))
-        )
-    }
-
-    // Set visibility of groups
-    $: {
-        elementsGroup.visible = false;
-        wireframeGroup.visible = false;
-
-        switch(shadingMode) {
-            case ShadingMode.Wireframe:
-                wireframeGroup.visible = true;
-                break;
-            case ShadingMode.Material:
-                elementsGroup.visible = true;
-        }
-    }
 
     // Update anti aliasing
     $: if(scene != null) {
@@ -86,14 +59,6 @@
         controls = new OrbitControls(camera, renderer.domElement)
         controls.enableKeys = false
         controls.screenSpacePanning = true
-
-        elementsGroup.translateX(-8);
-        elementsGroup.translateZ(-8);
-        scene.add(elementsGroup);
-
-        wireframeGroup.translateX(-8);
-        wireframeGroup.translateZ(-8);
-        scene.add(wireframeGroup);
     }
 
     function animate () {
@@ -114,7 +79,6 @@
             camera.updateProjectionMatrix()
         }
     }
-
 
     function setAnitAliasing(mode: string) {
         if(antiAliasingPass) {
@@ -139,3 +103,4 @@
 
 <canvas bind:this={canvas}/>
 <Overlays container={scene} {overlaySettings} visible={showOverlays}></Overlays>
+<Model container={scene} {shadingMode} elements={$elementMeshes} ></Model>
