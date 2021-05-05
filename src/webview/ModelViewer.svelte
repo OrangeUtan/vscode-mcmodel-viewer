@@ -17,7 +17,10 @@
 
 <style lang="scss">
     :global {
-        @import './styles/global.scss';
+        body {
+            height: 100vh;
+            width: 100vw;
+        }
     }
 
     #container {
