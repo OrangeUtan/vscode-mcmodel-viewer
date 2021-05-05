@@ -1,6 +1,6 @@
 <script lang="ts">
     import type { OverlaySettings } from "../data/config";
-    import { Text2D } from "../utils/Text2D";
+    import { Text2D } from "./Text2D";
     import * as THREE from 'three';
 
     export let container: THREE.Object3D | undefined;

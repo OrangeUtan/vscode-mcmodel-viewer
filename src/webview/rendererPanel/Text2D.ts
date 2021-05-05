@@ -1,4 +1,4 @@
-import {Mesh, TextGeometry, Color, MeshBasicMaterial} from 'three';
+import {Mesh, TextGeometry, MeshBasicMaterial} from 'three';
 
 export class Text2D extends Mesh {
     constructor(text: string, font: THREE.Font, rotation: number[], translation: number[], textColor = 0x444444) {
