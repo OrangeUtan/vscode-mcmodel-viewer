@@ -14,7 +14,7 @@ import { ShadingMode } from "../data/shading";
     .wrapper {
         position:fixed;
         top: 4px;
-        right: 6px;
+        right: 4px;
         display: flex;
         flex-direction: row;
     }

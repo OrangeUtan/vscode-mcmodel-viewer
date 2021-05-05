@@ -81,15 +81,7 @@
             addOverlays(overlaySettings);
         }
 
-        if(antiAliasingPass) {
-            composer.removePass(antiAliasingPass)
-        }
-        switch(overlaySettings.antiAliasing) {
-            case AntiAliasing.SSAA:
-                antiAliasingPass = new SSAARenderPass(scene, camera, 0, 0);
-                composer.addPass(antiAliasingPass);
-                break
-        }
+        setAnitAliasing(overlaySettings.antiAliasing);
     }
 
     function initScene () {
@@ -144,6 +136,18 @@
             new Text2D("S", font, [-Math.PI / 2, Math.PI, 0], [2, 0, 26]),
             new Text2D("W", font, [0, Math.PI / 2, Math.PI / 2], [-26, 0, 2]),
         ]
+    }
+
+    function setAnitAliasing(mode: string) {
+        if(antiAliasingPass) {
+            composer.removePass(antiAliasingPass)
+        }
+        switch(mode) {
+            case AntiAliasing.SSAA:
+                antiAliasingPass = new SSAARenderPass(scene, camera, 0, 0);
+                composer.addPass(antiAliasingPass);
+                break
+        }
     }
 
     function removeOverlays() {
