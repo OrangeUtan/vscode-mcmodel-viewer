@@ -1,6 +1,6 @@
 <script lang="ts">
     import Canvas from './Canvas.svelte';
-    import { elementMeshes, textures } from '../data/model';
+    import { textures } from '../data/model';
     import { onMount } from 'svelte';
     import { Animator } from '../utils/Animator';
     import { calculateCommonAnimationPeriod } from '@oran9e/three-mcmodel';
@@ -33,4 +33,4 @@
 </script>
 
 <RendererControls {shadingMode} setShadingMode={m => shadingMode = m} {showOverlays} setShowOverlays={s => showOverlays = s}/>
-<Canvas bind:this={canvas} elements={$elementMeshes} {shadingMode} {showOverlays} overlaySettings={$overlaySettings}/>
+<Canvas bind:this={canvas} {shadingMode} {showOverlays} overlaySettings={$overlaySettings}/>
