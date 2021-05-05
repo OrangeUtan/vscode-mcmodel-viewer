@@ -1,7 +1,6 @@
 <script lang="ts">
 	import * as THREE from 'three';
     import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
-    import { Text2D } from '../utils/Text2D'
     import { AntiAliasing } from '../data/config'
     import type { OverlaySettings } from '../data/config'
     import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer';
@@ -11,6 +10,7 @@
     import { onMount } from 'svelte';
     import type { ElementMesh } from '@oran9e/three-mcmodel';
     import { ShadingMode } from '../data/shading';
+    import Overlays from './Overlays.svelte';
 
     // Props
     export let elements: ElementMesh[];
@@ -30,12 +30,6 @@
     let antiAliasingPass: Pass | undefined;
     const elementsGroup = new THREE.Group();
     const wireframeGroup = new THREE.Group();
-
-    // Overlays
-    let voxelGrid: THREE.GridHelper | undefined;
-    let blockGrid: THREE.GridHelper | undefined;
-    let cardinalDirectionLabels: Text2D[] | undefined;
-    let boundingBox: THREE.LineSegments | undefined;
 
     onMount(async () => {
         initScene()
@@ -74,13 +68,8 @@
         }
     }
 
-    // Update overlays
+    // Update anti aliasing
     $: if(scene != null) {
-        removeOverlays();
-        if(showOverlays) {
-            addOverlays(overlaySettings);
-        }
-
         setAnitAliasing(overlaySettings.antiAliasing);
     }
 
@@ -126,17 +115,6 @@
         }
     }
 
-    async function createCardinalDirectionLabels() {
-        const loader = new THREE.FontLoader();
-        const font = await loader.loadAsync(RESOURCES_ROOT + '/helvetiker_regular.typeface.json');
-
-        return [
-            new Text2D("N", font, [-Math.PI / 2, 0, 0], [-2, 0, -26]),
-            new Text2D("E", font, [0, -Math.PI / 2, -Math.PI / 2], [26, 0, -2]),
-            new Text2D("S", font, [-Math.PI / 2, Math.PI, 0], [2, 0, 26]),
-            new Text2D("W", font, [0, Math.PI / 2, Math.PI / 2], [-26, 0, 2]),
-        ]
-    }
 
     function setAnitAliasing(mode: string) {
         if(antiAliasingPass) {
@@ -147,39 +125,6 @@
                 antiAliasingPass = new SSAARenderPass(scene, camera, 0, 0);
                 composer.addPass(antiAliasingPass);
                 break
-        }
-    }
-
-    function removeOverlays() {
-        if(boundingBox) scene.remove(boundingBox)
-        if(blockGrid) scene.remove(blockGrid)
-        if(voxelGrid) scene.remove(voxelGrid)
-        if(cardinalDirectionLabels != null) scene.remove(...cardinalDirectionLabels)
-    }
-
-    async function addOverlays(settings: OverlaySettings) {
-        if(settings.showBoundingBox) {
-            if(!boundingBox) {
-                boundingBox = new THREE.LineSegments(
-                    new THREE.EdgesGeometry(new THREE.BoxGeometry(48, 48, 48)).translate(0, 8, 0),
-                    new THREE.LineBasicMaterial({ color: 0x444444, linewidth: 3 })
-                )
-            }
-            scene.add(boundingBox)
-        }
-        if(settings.showVoxelGrid) {
-            if(!voxelGrid) voxelGrid = new THREE.GridHelper(48, 48, 0x444444, 0x444444)
-            scene.add(voxelGrid)
-        }
-        if(settings.show3x3BlocksGrid) {
-            if(!blockGrid) blockGrid = new THREE.GridHelper(48, 3);
-            scene.add(blockGrid)
-        }
-        if(settings.showCardinalDirectionLabels) {
-            if(cardinalDirectionLabels == null) {
-                cardinalDirectionLabels = await createCardinalDirectionLabels();
-            }
-            scene.add(...cardinalDirectionLabels)
         }
     }
 </script>
@@ -193,3 +138,4 @@
 </style>
 
 <canvas bind:this={canvas}/>
+<Overlays container={scene} {overlaySettings} visible={showOverlays}></Overlays>
