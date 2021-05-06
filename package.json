@@ -17,7 +17,7 @@
 		"minecraft",
 		"resourcepack"
 	],
-	"main": "./dist/extension/main.js",
+	"main": "./dist/extension/extension.js",
 	"activationEvents": [
 		"onLanguage:json",
 		"onCommand:mcmodel-viewer.showInViewer",
