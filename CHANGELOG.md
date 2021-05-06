@@ -1,5 +1,19 @@
 Changelog
 
+# [1.2.0](https://github.com/OrangeUtan/vscode-mcmodel-viewer/compare/v1.1.2...v1.2.0) (2021-05-06)
+
+
+### Bug Fixes
+
+* Applied model translation multiple times ([9fbf516](https://github.com/OrangeUtan/vscode-mcmodel-viewer/commit/9fbf5163908ee05f1241c48025aab90ac4f2480c))
+* Overlay toggle did not always toggle cardinal directo labels ([5df006e](https://github.com/OrangeUtan/vscode-mcmodel-viewer/commit/5df006e3e52cd28ab3b9f7ad4dffef554c71ec7a))
+* Viewer ignored overlay settings on creation ([50ab883](https://github.com/OrangeUtan/vscode-mcmodel-viewer/commit/50ab88308d31e4cdb5e1db3ac3ba1e1d886798ef))
+
+
+### Features
+
+* Hot reload of parent models ([7bac4a4](https://github.com/OrangeUtan/vscode-mcmodel-viewer/commit/7bac4a44428c51e7dc95ec8982a859f6e108da56))
+
 ## [1.1.2](https://github.com/OrangeUtan/vscode-mcmodel-viewer/compare/v1.1.1...v1.1.2) (2021-05-01)
 
 
