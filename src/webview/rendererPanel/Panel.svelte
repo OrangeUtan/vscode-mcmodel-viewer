@@ -2,7 +2,7 @@
     import Canvas from './Canvas.svelte';
     import { textures } from '../data/model';
     import { onMount } from 'svelte';
-    import { Animator } from '../utils/Animator';
+    import { Animator } from './Animator';
     import { calculateCommonAnimationPeriod } from '@oran9e/three-mcmodel';
     import { get } from 'svelte/store';
     import { ShadingMode } from '../data/shading';
