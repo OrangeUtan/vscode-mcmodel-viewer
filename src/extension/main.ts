@@ -28,7 +28,7 @@ export async function activate(context: vscode.ExtensionContext) {
 	context.subscriptions.push(
 		vscode.commands.registerCommand('mcmodel-viewer.showInViewer', async () => {
 			if(!vscode.window.activeTextEditor) {return;}
-			loadModel(vscode.window.activeTextEditor.document.uri, context);
+			showModel(vscode.window.activeTextEditor.document.uri, context);
 		}),
 		vscode.commands.registerCommand('mcmodel-viewer.refresh', () => {
 			ModelViewerPanel.kill();
@@ -44,7 +44,7 @@ export async function activate(context: vscode.ExtensionContext) {
 	context.subscriptions.push(
 		vscode.workspace.onDidSaveTextDocument((e) => {
 			if(currentlyModel && e.uri === currentlyModel) {
-				loadModel(currentlyModel, context);
+				showModel(currentlyModel, context);
 			}
 		}),
 	);
@@ -52,10 +52,10 @@ export async function activate(context: vscode.ExtensionContext) {
 
 export function deactivate() {}
 
-function loadModel(modelUri: vscode.Uri, context: vscode.ExtensionContext) {
+function showModel(modelUri: vscode.Uri, context: vscode.ExtensionContext) {
 	currentlyModel = modelUri;
 	const viewer = ModelViewerPanel.createOrShow(context.extensionUri);
-	viewer.loadModel(modelUri);
+	viewer.showModel(modelUri);
 }
 
 async function addAssetsRoot() {

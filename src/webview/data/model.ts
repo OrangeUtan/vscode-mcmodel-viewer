@@ -5,20 +5,20 @@ import { AssetResolver } from '../extension';
 import * as extension from '../extension';
 import { writable, get } from 'svelte/store';
 import { ElementGeometry } from '@oran9e/three-mcmodel/dist/geometry';
-import { ExtensionMessageType, LoadModelMsg } from '../../extension/messages';
+import { ExtensionMessageType, ShowModelMsg } from '../../extension/messages';
 
 export const elementMeshes = writable<ElementMesh[]>([]);
 export const textures = writable<{[assetPath: string]: MinecraftTexture}>({});
 
-extension.addExtensionMessageListener<LoadModelMsg>(ExtensionMessageType.LoadModel, async (msg) => {
+extension.addExtensionMessageListener<ShowModelMsg>(ExtensionMessageType.ShowModel, async (msg) => {
     try {
-        await loadModel(msg.modelUri);
+        await showModel(msg.modelUri);
     } catch(e) {
         extension.showError(e.message);
     }
 });
 
-async function loadModel(modelUrl: string) {
+async function showModel(modelUrl: string) {
     let modelJson = await new MinecraftModelJsonLoader().load(modelUrl);
     const ancestors = await loadAncestors(modelJson);
 

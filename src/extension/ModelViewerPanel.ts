@@ -101,9 +101,9 @@ export class ModelViewerPanel {
 		this._panel.webview.postMessage(msg);
 	}
 
-	public loadModel(modelUri: vscode.Uri) {
+	public showModel(modelUri: vscode.Uri) {
 		this._panel.title = path.basename(modelUri.path.toString());
-		this.postMessage({command: ExtensionMessageType.LoadModel, modelUri: this.webview.asWebviewUri(modelUri).toString()});
+		this.postMessage({command: ExtensionMessageType.ShowModel, modelUri: this.webview.asWebviewUri(modelUri).toString()});
 	};
 
 	public updateOverlaySettings(cfg: any) {
