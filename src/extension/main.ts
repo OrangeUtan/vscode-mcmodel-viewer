@@ -56,7 +56,6 @@ function loadModel(modelUri: vscode.Uri, context: vscode.ExtensionContext) {
 	currentlyModel = modelUri;
 	const viewer = ModelViewerPanel.createOrShow(context.extensionUri);
 	viewer.loadModel(modelUri);
-	viewer.updateOverlaySettings(config.getHelperConfiguration());
 }
 
 async function addAssetsRoot() {

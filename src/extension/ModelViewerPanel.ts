@@ -7,7 +7,9 @@ import { ViewerMessage, ViewerMessageType } from '../webview/messages';
 
 export class ModelViewerPanel {
 
-	public static readonly viewType = "mcmodel-viewer.viewer";
+	public static readonly VIEW_TYPE = "mcmodel-viewer.viewer";
+	private static readonly VIEW_COLUMN = vscode.ViewColumn.Beside;
+	private static readonly DEFAULT_TITLE = 'Minecraft Model Viewer';
 
     private static _instance?: ModelViewerPanel;
     private readonly _panel: vscode.WebviewPanel;
@@ -19,14 +21,15 @@ export class ModelViewerPanel {
 	}
 
     public static createOrShow(extensionUri: vscode.Uri) {
-		const column = vscode.ViewColumn.Beside;
-
-		// If we already have a panel, show it.
 		if (ModelViewerPanel._instance) {
-			ModelViewerPanel._instance._panel.reveal(column, true);
+			ModelViewerPanel._instance._panel.reveal(this.VIEW_COLUMN, true);
 			return ModelViewerPanel._instance;
 		}
 
+		return this.create(extensionUri);
+	}
+
+	public static create(extensionUri: vscode.Uri) {
 		let localResourceRoots = [
 			vscode.Uri.joinPath(extensionUri, "res"),
 			vscode.Uri.joinPath(extensionUri, "dist/webview")
@@ -34,18 +37,18 @@ export class ModelViewerPanel {
 		vscode.workspace.workspaceFolders?.forEach(f => localResourceRoots.push(f.uri));
 		config.getAssetsRoots().forEach(f => localResourceRoots.push(f));
 
-		// Otherwise, create a new panel.
 		const panel = vscode.window.createWebviewPanel(
-			ModelViewerPanel.viewType,
-			'Minecraft Model Viewer',
-			column,
+			this.VIEW_TYPE,
+			this.DEFAULT_TITLE,
+			this.VIEW_COLUMN,
 			{
                 enableScripts: true,
 				localResourceRoots
             }
 		);
-
 		ModelViewerPanel._instance = new ModelViewerPanel(panel, extensionUri);
+		this._instance?.updateOverlaySettings(config.getHelperConfiguration());
+
 		return ModelViewerPanel._instance;
 	}
 
