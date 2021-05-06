@@ -9,15 +9,14 @@
 
     const elementsGroup = new THREE.Group();
     const wireframeGroup = new THREE.Group();
+    elementsGroup.translateX(-8);
+    elementsGroup.translateZ(-8);
+    wireframeGroup.translateX(-8);
+    wireframeGroup.translateZ(-8);
 
     // Add model to container
     $: if (container != null) {
-        elementsGroup.translateX(-8);
-        elementsGroup.translateZ(-8);
         container.add(elementsGroup);
-
-        wireframeGroup.translateX(-8);
-        wireframeGroup.translateZ(-8);
         container.add(wireframeGroup);
     }
 
