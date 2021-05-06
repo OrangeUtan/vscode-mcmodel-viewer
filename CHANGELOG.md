@@ -1,5 +1,12 @@
 Changelog
 
+## [1.2.1](https://github.com/OrangeUtan/vscode-mcmodel-viewer/compare/v1.2.0...v1.2.1) (2021-05-06)
+
+
+### Bug Fixes
+
+* Wrong extension entry file ([866a5eb](https://github.com/OrangeUtan/vscode-mcmodel-viewer/commit/866a5eb935986584f2c0d3a63659ce24f98dc2e5))
+
 # [1.2.0](https://github.com/OrangeUtan/vscode-mcmodel-viewer/compare/v1.1.2...v1.2.0) (2021-05-06)
 
 
