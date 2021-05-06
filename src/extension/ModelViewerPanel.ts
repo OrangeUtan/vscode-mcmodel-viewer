@@ -1,77 +1,69 @@
 import * as vscode from 'vscode';
 import * as config from './config';
-import * as minecraft from './minecraft';
 import * as path from 'path';
-
+import { ExtensionMessage, ExtensionMessageType } from './messages';
+import { ViewerMessage, ViewerMessageType } from '../webview/messages';
+import { AssetsManager } from './assetsManager';
+import * as utils from './utils';
 
 export class ModelViewerPanel {
 
-    public static currentPanel?: ModelViewerPanel;
-    public static readonly viewType = "mcmodel-viewer.viewer";
+	public static readonly VIEW_TYPE = "mcmodel-viewer.viewer";
+	private static readonly VIEW_COLUMN = vscode.ViewColumn.Beside;
+	private static readonly DEFAULT_TITLE = 'Minecraft Model Viewer';
 
+    private static _instance?: ModelViewerPanel;
     private readonly _panel: vscode.WebviewPanel;
 	private readonly _extensionUri: vscode.Uri;
 	private _disposables: vscode.Disposable[] = [];
+	private _assetsManager: AssetsManager = new AssetsManager();
 
-	public static loadModel(modelUri: vscode.Uri) {
-		if(this.currentPanel) {
-			this.currentPanel._panel.title = path.basename(modelUri.path.toString());
-			this.postMessage({command: "loadModel", value: this.webview?.asWebviewUri(modelUri).toString()});
-		}
-	};
-
-	public static updateOverlaySettings(cfg: any) {
-		ModelViewerPanel.postMessage({command: "updateOverlaySettings", value: cfg});
-	}
-
-	static get webview() {
-		return this.currentPanel?._panel.webview;
+	public static get() {
+		return ModelViewerPanel._instance;
 	}
 
     public static createOrShow(extensionUri: vscode.Uri) {
-		const column = vscode.ViewColumn.Beside;
-
-		// If we already have a panel, show it.
-		if (ModelViewerPanel.currentPanel) {
-			ModelViewerPanel.currentPanel._panel.reveal(column, true);
-			return;
+		if (ModelViewerPanel._instance) {
+			ModelViewerPanel._instance._panel.reveal(this.VIEW_COLUMN, true);
+			return ModelViewerPanel._instance;
 		}
 
+		return this.create(extensionUri);
+	}
+
+	public static create(extensionUri: vscode.Uri) {
 		let localResourceRoots = [
 			vscode.Uri.joinPath(extensionUri, "res"),
-			vscode.Uri.joinPath(extensionUri, "dist/webviews")
+			vscode.Uri.joinPath(extensionUri, "dist/webview")
 		];
 		vscode.workspace.workspaceFolders?.forEach(f => localResourceRoots.push(f.uri));
 		config.getAssetsRoots().forEach(f => localResourceRoots.push(f));
 
-		// Otherwise, create a new panel.
 		const panel = vscode.window.createWebviewPanel(
-			ModelViewerPanel.viewType,
-			'Minecraft Model Viewer',
-			column,
+			this.VIEW_TYPE,
+			this.DEFAULT_TITLE,
+			this.VIEW_COLUMN,
 			{
                 enableScripts: true,
 				localResourceRoots
             }
 		);
+		ModelViewerPanel._instance = new ModelViewerPanel(panel, extensionUri);
+		this._instance?.updateOverlaySettings(config.getHelperConfiguration());
 
-		ModelViewerPanel.currentPanel = new ModelViewerPanel(panel, extensionUri);
+		return ModelViewerPanel._instance;
 	}
 
     public static kill() {
-        ModelViewerPanel.currentPanel?.dispose();
-        ModelViewerPanel.currentPanel = undefined;
+        ModelViewerPanel._instance?.dispose();
+        ModelViewerPanel._instance = undefined;
     }
 
     public static revive(panel: vscode.WebviewPanel, extensionUri: vscode.Uri) {
-		ModelViewerPanel.currentPanel = new ModelViewerPanel(panel, extensionUri);
+		ModelViewerPanel._instance = new ModelViewerPanel(panel, extensionUri);
 	}
 
-	public static postMessage(message: any) {
-		this.currentPanel?._panel.webview.postMessage(message);
-	}
-
-    private constructor(panel: vscode.WebviewPanel, extensionUri: vscode.Uri) {
+    constructor(panel: vscode.WebviewPanel, extensionUri: vscode.Uri) {
 		this._panel = panel;
 		this._extensionUri = extensionUri;
 
@@ -83,14 +75,14 @@ export class ModelViewerPanel {
 		this._panel.onDidDispose(() => this.dispose(), null, this._disposables);
 
 		// Handle messages from the webview
-		this._panel.webview.onDidReceiveMessage(
-			message => {
-				switch (message.command) {
-					case 'resolveAssets':
-						this.resolveAssets(message.assetPaths, message.assetType, message.requestID);
+		this._panel.webview.onDidReceiveMessage(message => {
+			const msg = message as ViewerMessage;
+				switch (msg.command) {
+					case ViewerMessageType.ResolveAssets:
+						this.resolveAssets(msg.assetPaths, msg.assetType, msg.requestId);
 						break;
-					case 'error':
-						vscode.window.showErrorMessage(message.text);
+					case ViewerMessageType.Error:
+						vscode.window.showErrorMessage(msg.text);
 						break;
 				}
 			},
@@ -98,42 +90,36 @@ export class ModelViewerPanel {
 			this._disposables
 		);
 
+		// Set context variable. Used for menus etc
 		panel.onDidChangeViewState(e => {
 			vscode.commands.executeCommand("setContext", "mcmodel-viewer.viewerActive", e.webviewPanel.active);
 		}, null, this._disposables);
+
+		this._assetsManager.setOnAssetChangedListener((assetPath: string, assetType: string, uri: vscode.Uri) => this.onAssetChanged(assetPath, assetType, uri));
 	}
 
-	private async resolveAssets(assetPaths: string[], assetType: string, requestID: number) {
-		const response = {command: "resolvedAssets", assetType, requestID};
-
-		let resolvedAssets: {[assetPath: string]: vscode.Uri | undefined};
-		switch(assetType) {
-			case "texture":
-				resolvedAssets = await minecraft.resolveTextureAssets(assetPaths);
-				break;
-			case "model":
-				resolvedAssets = await minecraft.resolveModelAssets(assetPaths);
-				break;
-			default:
-				response["assets"] = null;
-				ModelViewerPanel.postMessage(response);
-				return;
-		}
-
-		let webviewAssets: {[key: string]: string | null} = {};
-		for(const assetPath in resolvedAssets) {
-			const assetUri = resolvedAssets[assetPath];
-			webviewAssets[assetPath] = assetUri != null ? this._panel.webview?.asWebviewUri(assetUri).toString() : null;
-		}
-
-		response["assets"] = webviewAssets;
-		ModelViewerPanel.postMessage(response);
+	get webview() {
+		return this._panel.webview;
 	}
 
-	public dispose() {
-		ModelViewerPanel.currentPanel = undefined;
+	postMessage(msg: ExtensionMessage) {
+		this._panel.webview.postMessage(msg);
+	}
 
-		// Clean up our resources
+	public showModel(modelUri: vscode.Uri) {
+		this._assetsManager.reset();
+		this._panel.title = path.basename(modelUri.path.toString());
+		this.postMessage({command: ExtensionMessageType.ShowModel, modelUri: this.webview.asWebviewUri(modelUri).toString()});
+	};
+
+	public updateOverlaySettings(cfg: any) {
+		this.postMessage({command: ExtensionMessageType.UpdateOverlaySettings, settings: cfg});
+	}
+
+	dispose() {
+		ModelViewerPanel._instance = undefined;
+
+		this._assetsManager.dispose();
 		this._panel.dispose();
 
 		while (this._disposables.length) {
@@ -142,6 +128,24 @@ export class ModelViewerPanel {
 				x.dispose();
 			}
 		}
+	}
+
+	private async resolveAssets(assetPaths: string[], assetType: string, requestId: number) {
+		const resolvedAssets = await this._assetsManager.resolveAssets(assetPaths, assetType);
+		this._assetsManager.watchAssets(resolvedAssets, assetType);
+
+		const response: ExtensionMessage = {
+			command: ExtensionMessageType.ResolvedAssets,
+			assetType,
+			requestId,
+			assets: utils.asWebviewUris(resolvedAssets, this._panel.webview)
+		};
+		this.postMessage(response);
+	}
+
+	private onAssetChanged(assetPath: string, assetType: string, uri: vscode.Uri) {
+		const webviewUri = this.webview.asWebviewUri(uri);
+		this.postMessage({command: ExtensionMessageType.AssetChanged, assetPath, assetType, uri: webviewUri.toString()});
 	}
 
 	private _update() {
@@ -156,8 +160,8 @@ export class ModelViewerPanel {
 	}
 
     private _getHtmlForWebview(webview: vscode.Webview) {
-		const compiledDirUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "dist", "webviews"));
-		const scriptUri = vscode.Uri.joinPath(compiledDirUri, "MCModelViewer.js");
+		const compiledDirUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "dist", "webview"));
+		const scriptUri = vscode.Uri.joinPath(compiledDirUri, "main.js");
 		const bundleCSSUri = vscode.Uri.joinPath(compiledDirUri, "bundle.css");
 
 		const resourcesUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, 'res'));

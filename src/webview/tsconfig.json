@@ -1,6 +1,9 @@
 {
     "extends": "@tsconfig/svelte/tsconfig.json",
-    "include": ["./**/*", ],
+    "include": [
+        "./**/*",
+        "../extension/messages"
+    ],
     "exclude": ["../node_modules/*"],
     "compilerOptions": {"strict": true, }
 }

@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-import { ModelViewerPanel } from './ModelViewerPanel';
+import { ModelViewerPanel } from './modelViewerPanel';
 import * as config from './config';
 import * as utils from './utils';
 import * as minecraft from './minecraft';
@@ -17,7 +17,7 @@ export async function activate(context: vscode.ExtensionContext) {
 	context.subscriptions.push(
 		vscode.workspace.onDidChangeConfiguration(e => {
 			if(e.affectsConfiguration(config.SECTION_OVERLAY)) {
-				ModelViewerPanel.updateOverlaySettings(config.getHelperConfiguration());
+				ModelViewerPanel.get()?.updateOverlaySettings(config.getHelperConfiguration());
 			} else if(e.affectsConfiguration(config.SECTION_ASSETS_ROOTS)) {
 				minecraft.updateAssetsRoots();
 			}
@@ -28,7 +28,7 @@ export async function activate(context: vscode.ExtensionContext) {
 	context.subscriptions.push(
 		vscode.commands.registerCommand('mcmodel-viewer.showInViewer', async () => {
 			if(!vscode.window.activeTextEditor) {return;}
-			loadModel(vscode.window.activeTextEditor.document.uri, context);
+			showModel(vscode.window.activeTextEditor.document.uri, context);
 		}),
 		vscode.commands.registerCommand('mcmodel-viewer.refresh', () => {
 			ModelViewerPanel.kill();
@@ -44,7 +44,7 @@ export async function activate(context: vscode.ExtensionContext) {
 	context.subscriptions.push(
 		vscode.workspace.onDidSaveTextDocument((e) => {
 			if(currentlyModel && e.uri === currentlyModel) {
-				loadModel(currentlyModel, context);
+				showModel(currentlyModel, context);
 			}
 		}),
 	);
@@ -52,11 +52,10 @@ export async function activate(context: vscode.ExtensionContext) {
 
 export function deactivate() {}
 
-function loadModel(modelUri: vscode.Uri, context: vscode.ExtensionContext) {
+function showModel(modelUri: vscode.Uri, context: vscode.ExtensionContext) {
 	currentlyModel = modelUri;
-	ModelViewerPanel.createOrShow(context.extensionUri);
-	ModelViewerPanel.loadModel(modelUri);
-	ModelViewerPanel.updateOverlaySettings(config.getHelperConfiguration());
+	const viewer = ModelViewerPanel.createOrShow(context.extensionUri);
+	viewer.showModel(modelUri);
 }
 
 async function addAssetsRoot() {

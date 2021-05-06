@@ -12,6 +12,7 @@
 		"noImplicitAny": false
 	},
 	"include": [
-		"src/extension"
+		"src/extension",
+		"src/webview/messages.ts"
 	]
 }
