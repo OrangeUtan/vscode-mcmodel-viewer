@@ -5,35 +5,64 @@ import { AssetResolver } from '../extension';
 import * as extension from '../extension';
 import { writable, get } from 'svelte/store';
 import { ElementGeometry } from '@oran9e/three-mcmodel/dist/geometry';
-import { ExtensionMessageType, ShowModelMsg } from '../../extension/messages';
+import { ExtensionMessageType, ShowModelMsg,AssetChangedMsg } from '../../extension/messages';
 
-export const jsonModel = writable<MinecraftModelJson | undefined>(undefined);
-export const ancestorJsonModels = writable<{[assetPath: string]: MinecraftModelJson}>({});
+let jsonModel: MinecraftModelJson | undefined = undefined;
+let ancestorJsonModels: {[assetPath: string]: MinecraftModelJson} = {};
+
 export const elementMeshes = writable<ElementMesh[]>([]);
 export const textures = writable<{[assetPath: string]: MinecraftTexture}>({});
 
-extension.addExtensionMessageListener<ShowModelMsg>(ExtensionMessageType.ShowModel, msg => showModel(msg.modelUri));
+extension.addExtensionMessageListener<ShowModelMsg>(ExtensionMessageType.ShowModel, msg => {
+    showModel(msg.modelUri);
+});
+
+extension.addExtensionMessageListener<AssetChangedMsg>(ExtensionMessageType.AssetChanged, msg => {
+    switch(msg.assetType) {
+        case "model":
+            onAncestorChanged(msg.assetPath);
+            break;
+        case "texture":
+            break;
+        default:
+            return;
+    }
+});
+
+async function onAncestorChanged(assetPath: string) {
+    if(!(assetPath in ancestorJsonModels)) return;
+    if(jsonModel) {
+        let cachedAncestors = ancestorJsonModels;
+        const updatedAncestor = cachedAncestors[assetPath];
+        try {
+            delete cachedAncestors[assetPath];
+            await updateModel(jsonModel, ancestorJsonModels);
+        } catch(e) {
+            extension.showError(e.message);
+            cachedAncestors[assetPath] = updatedAncestor;
+            return;
+        }
+    }
+}
 
 async function showModel(modelUrl: string) {
-    // Load model and ancestors
     let newJsonModel: MinecraftModelJson;
-    let newAncestorJsonModels: {[assetPath: string]: MinecraftModelJson};
     try {
         newJsonModel = await new MinecraftModelJsonLoader().load(modelUrl);
-        newAncestorJsonModels = await loadAncestors(newJsonModel);
     } catch(e) {
         extension.showError(e.message);
         return;
     }
 
-    // Update and show model
-    jsonModel.set(newJsonModel);
-    ancestorJsonModels.set(newAncestorJsonModels);
-    updateModel(newJsonModel, newAncestorJsonModels);
+    updateModel(newJsonModel);
 }
 
-async function updateModel(jsonModel: MinecraftModelJson, ancestorJsonModels: {[assetPath: string]: MinecraftModelJson}) {
-    const model = MinecraftModel.fromJson(resolveModelJson(jsonModel, ancestorJsonModels));
+async function updateModel(newJsonModel: MinecraftModelJson, cachedJsonModels: {[assetPath: string]: MinecraftModelJson} = {}) {
+    const newAncestorJsonModels = await loadAncestors(newJsonModel, cachedJsonModels);
+    const model = MinecraftModel.fromJson(resolveModelJson(newJsonModel, newAncestorJsonModels));
+
+    jsonModel = newJsonModel;
+    ancestorJsonModels = newAncestorJsonModels;
 
     let elements = [];
     for(const element of model.elements) {
@@ -43,27 +72,32 @@ async function updateModel(jsonModel: MinecraftModelJson, ancestorJsonModels: {[
     }
     elementMeshes.set(elements);
 
-
     AssetResolver.resolveAssets(Object.values(model.textures), "texture")
         .then((textureUrls) => loadTextures(textureUrls));
 }
 
-async function loadAncestors(root: MinecraftModelJson) {
+async function loadAncestors(root: MinecraftModelJson, cachedJsonModels: {[assetPath: string]: MinecraftModelJson} = {}) {
     let ancestors: {[assetPath: string]: MinecraftModelJson} = {};
+
     let current = root;
     while(current.parent != null) {
-        const url = (await AssetResolver.resolveAssets([current.parent], "model"))[current.parent];
+        let ancestor: MinecraftModelJson | undefined = cachedJsonModels[current.parent];
 
-        if(url === null) {
-            throw new Error("Couldn't resolve parent: " + current.parent);
+        // Load ancestor if it is not cached
+        if(ancestor == null) {
+            const url = (await AssetResolver.resolveAssets([current.parent], "model"))[current.parent];
+
+            if(url === null) {
+                throw new Error("Couldn't resolve parent: " + current.parent);
+            }
+
+            try {
+                ancestor = await new MinecraftModelJsonLoader().load(url);
+            } catch(e) {
+                throw new Error(`Failed loading parent '${current.parent}': ${e.message}`);
+            }
         }
 
-        let ancestor: MinecraftModelJson;
-        try {
-            ancestor = await new MinecraftModelJsonLoader().load(url);
-        } catch(e) {
-            throw new Error(`Failed loading parent '${current.parent}': ${e.message}`);
-        }
         ancestors[current.parent] = ancestor;
         current = ancestor;
     }

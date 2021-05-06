@@ -1,9 +1,10 @@
 import * as vscode from 'vscode';
 import * as config from './config';
-import * as minecraft from './minecraft';
 import * as path from 'path';
 import { ExtensionMessage, ExtensionMessageType } from './messages';
 import { ViewerMessage, ViewerMessageType } from '../webview/messages';
+import { AssetsManager } from './assetsManager';
+import * as utils from './utils';
 
 export class ModelViewerPanel {
 
@@ -15,6 +16,7 @@ export class ModelViewerPanel {
     private readonly _panel: vscode.WebviewPanel;
 	private readonly _extensionUri: vscode.Uri;
 	private _disposables: vscode.Disposable[] = [];
+	private _assetsManager: AssetsManager = new AssetsManager();
 
 	public static get() {
 		return ModelViewerPanel._instance;
@@ -88,9 +90,12 @@ export class ModelViewerPanel {
 			this._disposables
 		);
 
+		// Set context variable. Used for menus etc
 		panel.onDidChangeViewState(e => {
 			vscode.commands.executeCommand("setContext", "mcmodel-viewer.viewerActive", e.webviewPanel.active);
 		}, null, this._disposables);
+
+		this._assetsManager.setOnAssetChangedListener((assetPath: string, assetType: string, uri: vscode.Uri) => this.onAssetChanged(assetPath, assetType, uri));
 	}
 
 	get webview() {
@@ -102,6 +107,7 @@ export class ModelViewerPanel {
 	}
 
 	public showModel(modelUri: vscode.Uri) {
+		this._assetsManager.reset();
 		this._panel.title = path.basename(modelUri.path.toString());
 		this.postMessage({command: ExtensionMessageType.ShowModel, modelUri: this.webview.asWebviewUri(modelUri).toString()});
 	};
@@ -113,7 +119,7 @@ export class ModelViewerPanel {
 	dispose() {
 		ModelViewerPanel._instance = undefined;
 
-		// Clean up our resources
+		this._assetsManager.dispose();
 		this._panel.dispose();
 
 		while (this._disposables.length) {
@@ -125,29 +131,21 @@ export class ModelViewerPanel {
 	}
 
 	private async resolveAssets(assetPaths: string[], assetType: string, requestId: number) {
-		const response: ExtensionMessage = {command: ExtensionMessageType.ResolvedAssets, assetType, requestId, assets: null};
+		const resolvedAssets = await this._assetsManager.resolveAssets(assetPaths, assetType);
+		this._assetsManager.watchAssets(resolvedAssets, assetType);
 
-		let resolvedAssets: {[assetPath: string]: vscode.Uri | undefined};
-		switch(assetType) {
-			case "texture":
-				resolvedAssets = await minecraft.resolveTextureAssets(assetPaths);
-				break;
-			case "model":
-				resolvedAssets = await minecraft.resolveModelAssets(assetPaths);
-				break;
-			default:
-				this.postMessage(response);
-				return;
-		}
-
-		let webviewAssets: {[key: string]: string | null} = {};
-		for(const assetPath in resolvedAssets) {
-			const assetUri = resolvedAssets[assetPath];
-			webviewAssets[assetPath] = assetUri != null ? this._panel.webview?.asWebviewUri(assetUri).toString() : null;
-		}
-
-		response["assets"] = webviewAssets;
+		const response: ExtensionMessage = {
+			command: ExtensionMessageType.ResolvedAssets,
+			assetType,
+			requestId,
+			assets: utils.asWebviewUris(resolvedAssets, this._panel.webview)
+		};
 		this.postMessage(response);
+	}
+
+	private onAssetChanged(assetPath: string, assetType: string, uri: vscode.Uri) {
+		const webviewUri = this.webview.asWebviewUri(uri);
+		this.postMessage({command: ExtensionMessageType.AssetChanged, assetPath, assetType, uri: webviewUri.toString()});
 	}
 
 	private _update() {
