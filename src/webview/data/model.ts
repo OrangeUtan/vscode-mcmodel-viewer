@@ -7,22 +7,33 @@ import { writable, get } from 'svelte/store';
 import { ElementGeometry } from '@oran9e/three-mcmodel/dist/geometry';
 import { ExtensionMessageType, ShowModelMsg } from '../../extension/messages';
 
+export const jsonModel = writable<MinecraftModelJson | undefined>(undefined);
+export const ancestorJsonModels = writable<{[assetPath: string]: MinecraftModelJson}>({});
 export const elementMeshes = writable<ElementMesh[]>([]);
 export const textures = writable<{[assetPath: string]: MinecraftTexture}>({});
 
-extension.addExtensionMessageListener<ShowModelMsg>(ExtensionMessageType.ShowModel, async (msg) => {
-    try {
-        await showModel(msg.modelUri);
-    } catch(e) {
-        extension.showError(e.message);
-    }
-});
+extension.addExtensionMessageListener<ShowModelMsg>(ExtensionMessageType.ShowModel, msg => showModel(msg.modelUri));
 
 async function showModel(modelUrl: string) {
-    let modelJson = await new MinecraftModelJsonLoader().load(modelUrl);
-    const ancestors = await loadAncestors(modelJson);
+    // Load model and ancestors
+    let newJsonModel: MinecraftModelJson;
+    let newAncestorJsonModels: {[assetPath: string]: MinecraftModelJson};
+    try {
+        newJsonModel = await new MinecraftModelJsonLoader().load(modelUrl);
+        newAncestorJsonModels = await loadAncestors(newJsonModel);
+    } catch(e) {
+        extension.showError(e.message);
+        return;
+    }
 
-    const model = MinecraftModel.fromJson(resolveModelJson(modelJson, ancestors));
+    // Update and show model
+    jsonModel.set(newJsonModel);
+    ancestorJsonModels.set(newAncestorJsonModels);
+    updateModel(newJsonModel, newAncestorJsonModels);
+}
+
+async function updateModel(jsonModel: MinecraftModelJson, ancestorJsonModels: {[assetPath: string]: MinecraftModelJson}) {
+    const model = MinecraftModel.fromJson(resolveModelJson(jsonModel, ancestorJsonModels));
 
     let elements = [];
     for(const element of model.elements) {
