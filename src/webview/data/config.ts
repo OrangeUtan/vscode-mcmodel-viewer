@@ -16,10 +16,10 @@ export interface OverlaySettings {
 }
 
 export const overlaySettings = writable<OverlaySettings>({
-	showBoundingBox: true,
-	showCardinalDirectionLabels: true,
-	show3x3BlocksGrid: true,
-	showVoxelGrid: true,
+	showBoundingBox: false,
+	showCardinalDirectionLabels: false,
+	show3x3BlocksGrid: false,
+	showVoxelGrid: false,
 	antiAliasing: 'SSAA'
 });
 
