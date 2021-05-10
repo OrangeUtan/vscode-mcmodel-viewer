@@ -1,5 +1,5 @@
 import { vscode } from '../extension';
-import * as config from '../data/config';
+import * as config from './config';
 import { get } from 'svelte/store';
 
 export interface State {

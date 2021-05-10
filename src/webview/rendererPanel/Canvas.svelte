@@ -1,8 +1,8 @@
 <script lang="ts">
 	import * as THREE from 'three';
-    import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
-    import { AntiAliasing } from '../data/config'
-    import type { OverlaySettings } from '../data/config'
+    import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
+    import { AntiAliasing } from '../state/config';
+    import type { OverlaySettings } from '../state/config';
     import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer';
     import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js';
     import { SSAARenderPass } from 'three/examples/jsm/postprocessing/SSAARenderPass';
@@ -10,8 +10,8 @@
     import { onMount } from 'svelte';
     import Overlays from './Overlays.svelte';
     import Model from './Model.svelte';
-    import { elementMeshes } from '../data/model';
-    import type { ShadingMode } from '../data/shading';
+    import { elementMeshes } from '../state/model';
+    import type { ShadingMode } from '../state/shading';
 
     // Props
     export let overlaySettings: OverlaySettings;

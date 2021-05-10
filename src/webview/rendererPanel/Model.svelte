@@ -1,7 +1,7 @@
 <script lang="ts">
     import type { ElementMesh } from '@oran9e/three-mcmodel';
     import * as THREE from 'three';
-    import { ShadingMode } from '../data/shading';
+    import { ShadingMode } from '../state/shading';
 
     export let elements: ElementMesh[];
     export let container: THREE.Object3D | undefined;
