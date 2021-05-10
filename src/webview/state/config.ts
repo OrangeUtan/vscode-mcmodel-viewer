@@ -1,6 +1,6 @@
 import { ExtensionMessageType, UpdateOverlaySettingsMsg } from '../../extension/messages';
-import { writable } from 'svelte/store';
 import * as extension from '../extension';
+import { persistStore } from './persistStore';
 
 export const defaultOverlaySettings: OverlaySettings = {
 	showBoundingBox: false,
@@ -10,7 +10,7 @@ export const defaultOverlaySettings: OverlaySettings = {
 	antiAliasing: 'SSAA'
 };
 
-export const overlaySettings = writable<OverlaySettings>(defaultOverlaySettings);
+export const overlaySettings = persistStore<OverlaySettings>("overlaySettings", defaultOverlaySettings);
 
 extension.addExtensionMessageListener<UpdateOverlaySettingsMsg>(ExtensionMessageType.UpdateOverlaySettings, (msg) => {
     overlaySettings.set(msg.settings);
