@@ -6,17 +6,33 @@ import * as extension from '../extension';
 import { writable, get } from 'svelte/store';
 import { ElementGeometry } from '@oran9e/three-mcmodel/dist/geometry';
 import { ExtensionMessageType, ShowModelMsg,AssetChangedMsg } from '../../extension/messages';
+import { persistStore } from './persistStore';
+
+/*-------*/
+/* State */
+/*-------*/
+export const modelUrl = persistStore<string|undefined>("modelUrl", undefined);
+export const elementMeshes = writable<ElementMesh[]>([]);
+export const textures = writable<{[assetPath: string]: MinecraftTexture}>({});
 
 let jsonModel: MinecraftModelJson | undefined = undefined;
 let ancestorJsonModels: {[assetPath: string]: MinecraftModelJson} = {};
 
-export const elementMeshes = writable<ElementMesh[]>([]);
-export const textures = writable<{[assetPath: string]: MinecraftTexture}>({});
-
-extension.addExtensionMessageListener<ShowModelMsg>(ExtensionMessageType.ShowModel, msg => {
-    showModel(msg.modelUri);
+/*---------------*/
+/* State changes */
+/*---------------*/
+modelUrl.subscribe(url => {
+    if(url) {
+        showModel(url);
+    };
 });
 
+/*--------------------*/
+/* Extension messages */
+/*--------------------*/
+extension.addExtensionMessageListener<ShowModelMsg>(ExtensionMessageType.ShowModel, msg => {
+    modelUrl.set(msg.modelUri);
+});
 extension.addExtensionMessageListener<AssetChangedMsg>(ExtensionMessageType.AssetChanged, msg => {
     switch(msg.assetType) {
         case "model":
