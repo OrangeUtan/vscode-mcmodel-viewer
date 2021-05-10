@@ -3,6 +3,7 @@
 	"displayName": "Minecraft Model Viewer",
 	"description": "A viewer for Java Minecraft models",
 	"version": "0.0.1",
+	"preview": true,
 	"author": "Oran9eUtan",
 	"publisher": "Oran9eUtan",
 	"repository": {
