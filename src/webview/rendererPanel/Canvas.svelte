@@ -12,11 +12,17 @@
     import Model from './Model.svelte';
     import { elementMeshes } from '../state/model';
     import type { ShadingMode } from '../state/shading';
+    import { persistStore } from '../state/persistStore';
+    import { get } from 'svelte/store';
 
     // Props
     export let overlaySettings: OverlaySettings;
     export let shadingMode: ShadingMode;
     export let showOverlays: boolean;
+
+    // State
+    let cameraPos = persistStore<[number, number, number]>("cameraPosition", [0, 48, -48]);
+    let cameraTarget = persistStore<[number, number, number]>("cameraTarget", [0, 0, 0]);
 
     // Html elements
     let canvas: HTMLCanvasElement;
@@ -49,7 +55,7 @@
     function initScene () {
         scene = new THREE.Scene()
         camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.01, 1000)
-        camera.position.set(0, 48, -48)
+        camera.position.fromArray(get(cameraPos));
 
         renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, canvas })
         composer = new EffectComposer(renderer as THREE.WebGLRenderer)
@@ -57,8 +63,12 @@
         resizeRendererToDisplaySize()
 
         controls = new OrbitControls(camera, renderer.domElement)
-        controls.enableKeys = false
         controls.screenSpacePanning = true
+        controls.target.fromArray(get(cameraTarget))
+        controls.addEventListener("change", (e) => {
+            cameraPos.set(camera.position.toArray());
+            cameraTarget.set(controls.target.toArray())
+        })
     }
 
     function animate () {
