@@ -1,9 +1,11 @@
 <script lang="ts">
 import { ShadingMode } from "../state/shading";
     export let shadingMode: ShadingMode;
-    export let setShadingMode: (mode: ShadingMode) => void;
     export let showOverlays: boolean;
-    export let setShowOverlays: (show: boolean) => void;
+
+    function toggleOverlays() {
+        showOverlays = !showOverlays;
+    }
 </script>
 
 <style lang="scss">
@@ -71,7 +73,7 @@ import { ShadingMode } from "../state/shading";
 
 <div class="wrapper">
     <div class="btn-group">
-        <div title="Toggle Overlays" class="btn right" class:selected={showOverlays} on:click={() => setShowOverlays(!showOverlays)}>
+        <div title="Toggle Overlays" class="btn right" class:selected={showOverlays} on:click={toggleOverlays}>
             <svg class="icon" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <line x1="4.5" x2="4.5" y2="14"/>
                 <line x1="9.5" x2="9.5" y2="14"/>
@@ -81,13 +83,13 @@ import { ShadingMode } from "../state/shading";
         </div>
     </div>
     <div class="btn-group">
-        <div title="Shading: Wireframe" class="btn" class:selected={shadingMode === ShadingMode.Wireframe} on:click={() => setShadingMode(ShadingMode.Wireframe)}>
+        <div title="Shading: Wireframe" class="btn" class:selected={shadingMode === ShadingMode.Wireframe} on:click={() => shadingMode = ShadingMode.Wireframe}>
             <svg class="icon" viewBox="0 0 18 18" xmlns="http://www.w3.org/2000/svg">
                 <circle cx="9" cy="9" r="8.5" fill="transparent"/>
                 <path d="M17 6H1M1 12H17M5.5 1.5V16.5M12.5 16.5V1.5"/>
             </svg>
         </div>
-        <div title="Shading: Matierial" class="btn right" class:selected={shadingMode === ShadingMode.Material} on:click={() => setShadingMode(ShadingMode.Material)}>
+        <div title="Shading: Matierial" class="btn right" class:selected={shadingMode === ShadingMode.Material} on:click={() => shadingMode = ShadingMode.Material}>
             <svg class="icon" viewBox="0 0 18 18" xmlns="http://www.w3.org/2000/svg">
                 <circle cx="9" cy="9" r="8.5"/>
             </svg>

@@ -8,9 +8,10 @@
     import { ShadingMode } from '../state/shading';
     import RendererControls from './Controls.svelte';
     import { overlaySettings } from '../state/config';
+    import { persistStore } from '../state/persistStore';
 
-    let shadingMode = ShadingMode.Material;
-    let showOverlays = true;
+    let shadingMode = persistStore<ShadingMode>("shadingMode", ShadingMode.Material);
+    let showOverlays = persistStore<boolean>("showOverlays", true);
 
     let canvas: Canvas;
     let animator = new Animator();
@@ -32,5 +33,5 @@
     });
 </script>
 
-<RendererControls {shadingMode} setShadingMode={m => shadingMode = m} {showOverlays} setShowOverlays={s => showOverlays = s}/>
-<Canvas bind:this={canvas} {shadingMode} {showOverlays} overlaySettings={$overlaySettings}/>
+<RendererControls bind:shadingMode={$shadingMode} bind:showOverlays={$showOverlays}/>
+<Canvas bind:this={canvas} shadingMode={$shadingMode} showOverlays={$showOverlays} overlaySettings={$overlaySettings}/>
