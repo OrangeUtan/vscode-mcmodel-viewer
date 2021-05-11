@@ -16,7 +16,9 @@ export const elementMeshes = writable<ElementMesh[]>([]);
 export const textures = writable<{[assetPath: string]: MinecraftTexture}>({});
 
 let jsonModel: MinecraftModelJson | undefined = undefined;
-let ancestorJsonModels: {[assetPath: string]: MinecraftModelJson} = {};
+
+let ancestors: string[] = [];
+let cachedJsonModels: {[assetPath: string]: MinecraftModelJson} = {};
 
 /*---------------*/
 /* State changes */
@@ -47,16 +49,15 @@ extension.addExtensionMessageListener<AssetChangedMsg>(ExtensionMessageType.Asse
 });
 
 async function onAncestorChanged(assetPath: string) {
-    if(!(assetPath in ancestorJsonModels)) return;
+    if(!ancestors.includes(assetPath)) return;
     if(jsonModel) {
-        let cachedAncestors = ancestorJsonModels;
-        const updatedAncestor = cachedAncestors[assetPath];
+        const updatedAncestor = cachedJsonModels[assetPath];
         try {
-            delete cachedAncestors[assetPath];
-            await updateModel(jsonModel, ancestorJsonModels);
+            delete cachedJsonModels[assetPath];
+            await updateModel(jsonModel);
         } catch(e) {
             extension.showError(e.message);
-            cachedAncestors[assetPath] = updatedAncestor;
+            cachedJsonModels[assetPath] = updatedAncestor;
             return;
         }
     }
@@ -71,15 +72,20 @@ async function showModel(modelUrl: string) {
         return;
     }
 
+    cachedJsonModels = {};
+    ancestors = [];
     updateModel(newJsonModel);
 }
 
-async function updateModel(newJsonModel: MinecraftModelJson, cachedJsonModels: {[assetPath: string]: MinecraftModelJson} = {}) {
-    const newAncestorJsonModels = await loadAncestors(newJsonModel, cachedJsonModels);
+async function updateModel(newJsonModel: MinecraftModelJson) {
+    const {ancestors: newAncestors, ancestorJsonModels: newAncestorJsonModels}= await loadAncestors(newJsonModel);
     const model = MinecraftModel.fromJson(resolveModelJson(newJsonModel, newAncestorJsonModels));
 
     jsonModel = newJsonModel;
-    ancestorJsonModels = newAncestorJsonModels;
+    ancestors = newAncestors;
+    for(const key in newAncestorJsonModels) {
+        cachedJsonModels[key] = newAncestorJsonModels[key];
+    }
 
     let elements = [];
     for(const element of model.elements) {
@@ -93,8 +99,9 @@ async function updateModel(newJsonModel: MinecraftModelJson, cachedJsonModels: {
         .then((textureUrls) => loadTextures(textureUrls));
 }
 
-async function loadAncestors(root: MinecraftModelJson, cachedJsonModels: {[assetPath: string]: MinecraftModelJson} = {}) {
-    let ancestors: {[assetPath: string]: MinecraftModelJson} = {};
+async function loadAncestors(root: MinecraftModelJson) {
+    let ancestors: string[] = [];
+    let ancestorJsonModels: {[assetPath: string]: MinecraftModelJson} = {};
 
     let current = root;
     while(current.parent != null) {
@@ -115,11 +122,15 @@ async function loadAncestors(root: MinecraftModelJson, cachedJsonModels: {[asset
             }
         }
 
-        ancestors[current.parent] = ancestor;
+        ancestors.push(current.parent);
+        ancestorJsonModels[current.parent] = ancestor;
         current = ancestor;
     }
 
-    return ancestors;
+    return {
+        ancestors,
+        ancestorJsonModels
+    };
 }
 
 async function loadTextures(textureUrls: {[assetPath: string]: string | null}) {
