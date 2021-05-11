@@ -1,5 +1,20 @@
 Changelog
 
+# [1.3.0](https://github.com/OrangeUtan/vscode-mcmodel-viewer/compare/v1.2.1...v1.3.0) (2021-05-11)
+
+
+### Bug Fixes
+
+* Model was not hot reloading ([05a3e99](https://github.com/OrangeUtan/vscode-mcmodel-viewer/commit/05a3e99f1145f270a823aa506116b3df0d7d19ef))
+
+
+### Features
+
+* Persistent overlay settings ([d078729](https://github.com/OrangeUtan/vscode-mcmodel-viewer/commit/d078729a6e72e830e7b6debbeca2bd77ffac9bfc))
+* Viewer now persists opened model ([f2ddc8f](https://github.com/OrangeUtan/vscode-mcmodel-viewer/commit/f2ddc8ffbd770b3f16c8aa5d916a09f73ff78939))
+* Viewer persists camera ([cca2051](https://github.com/OrangeUtan/vscode-mcmodel-viewer/commit/cca205197405cbb76b0b5b7e5bf2ce4177033414))
+* Viewer persists shading and overlay controls ([ddb139c](https://github.com/OrangeUtan/vscode-mcmodel-viewer/commit/ddb139c34f1182475f4868705c49b327a5e96d0b))
+
 ## [1.2.1](https://github.com/OrangeUtan/vscode-mcmodel-viewer/compare/v1.2.0...v1.2.1) (2021-05-06)
 
 
