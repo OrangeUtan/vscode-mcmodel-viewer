@@ -31,6 +31,7 @@ modelUrl.subscribe(url => {
 /* Extension messages */
 /*--------------------*/
 extension.addExtensionMessageListener<ShowModelMsg>(ExtensionMessageType.ShowModel, msg => {
+    modelUrl.set(undefined);
     modelUrl.set(msg.modelUri);
 });
 extension.addExtensionMessageListener<AssetChangedMsg>(ExtensionMessageType.AssetChanged, msg => {
